@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { VenueBackground } from "./broadcast/VenueBackground";
 import { Scoreboard } from "./Scoreboard";
 import { MatchSituationBar } from "./MatchSituationBar";
@@ -10,6 +10,25 @@ import { BroadcastEventOverlay } from "./broadcast/BroadcastEventOverlay";
 import { InningsTimeline } from "./InningsTimeline";
 
 export function BroadcastLayout({ matchData, connectionStatus, animations, controlState, activeEvent }) {
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const updateScale = () => {
+      const targetWidth = 1920;
+      const targetHeight = 1080;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const scaleX = w / targetWidth;
+      const scaleY = h / targetHeight;
+      const currentScale = Math.min(scaleX, scaleY);
+      setScale(currentScale > 0 ? currentScale : 1);
+    };
+
+    updateScale();
+    window.addEventListener("resize", updateScale);
+    return () => window.removeEventListener("resize", updateScale);
+  }, []);
+
   if (!matchData) return null;
 
   const { teams, players } = matchData;
@@ -27,46 +46,59 @@ export function BroadcastLayout({ matchData, connectionStatus, animations, contr
 
   return (
     <div className={`broadcast-root layout-${ctrl.layout ? ctrl.layout.toLowerCase() : "default"}`}>
-      {ctrl.showVenue && <VenueBackground />}
+      <div
+        className="broadcast-scalable-stage"
+        style={{
+          width: "1920px",
+          height: "1080px",
+          position: "relative",
+          transform: `scale(${scale})`,
+          transformOrigin: "center center",
+          flexShrink: 0,
+          overflow: "hidden"
+        }}
+      >
+        {ctrl.showVenue && <VenueBackground />}
 
-      {/* High-Impact Broadcast Event Overlay Banners (WICKET, SIX, FOUR, MILESTONE) */}
-      <BroadcastEventOverlay activeEvent={activeEvent} />
+        {/* High-Impact Broadcast Event Overlay Banners (WICKET, SIX, FOUR, MILESTONE) */}
+        <BroadcastEventOverlay activeEvent={activeEvent} />
 
-      <div className="broadcast-canvas" style={{ zIndex: 1 }}>
-        {/* Top Scoreboard & Situation Stack */}
-        {(ctrl.showScoreboard || isScoreOnly) && (
-          <div className="broadcast-top-group">
-            <Scoreboard matchData={matchData} animScore={animations?.score} />
-            {!isScoreOnly && <MatchSituationBar matchData={matchData} />}
+        <div className="broadcast-canvas" style={{ zIndex: 1, width: "100%", height: "100%" }}>
+          {/* Top Scoreboard & Situation Stack */}
+          {(ctrl.showScoreboard || isScoreOnly) && (
+            <div className="broadcast-top-group">
+              <Scoreboard matchData={matchData} animScore={animations?.score} />
+              {!isScoreOnly && <MatchSituationBar matchData={matchData} />}
+            </div>
+          )}
+
+          {/* Central Hero Player Cards Section */}
+          {ctrl.showPlayers && !isScoreOnly && !isCompact && (
+            <div className="middle-grid">
+              <BatsmanCard batsman={players.striker} teamName={teams.batting} isStriker={true} />
+              <BatsmanCard batsman={players.nonStriker} teamName={teams.batting} isStriker={false} />
+              <BowlerCard bowler={players.bowler} teamName={teams.bowling} />
+            </div>
+          )}
+
+          {/* Low-height Match Context / Analytics Panel */}
+          {!isScoreOnly && !isCompact && (
+            <MatchAnalyticsPanel matchData={matchData} />
+          )}
+
+          {/* Visual Innings Progression Timeline */}
+          {!isScoreOnly && !isCompact && (
+            <InningsTimeline matchData={matchData} />
+          )}
+        </div>
+
+        {/* Continuous Infinite Bottom Marquee Ticker */}
+        {!isScoreOnly && (
+          <div className="bottom-ticker-fixed-wrapper">
+            <BroadcastTicker matchData={matchData} />
           </div>
-        )}
-
-        {/* Central Hero Player Cards Section */}
-        {ctrl.showPlayers && !isScoreOnly && !isCompact && (
-          <div className="middle-grid">
-            <BatsmanCard batsman={players.striker} teamName={teams.batting} isStriker={true} />
-            <BatsmanCard batsman={players.nonStriker} teamName={teams.batting} isStriker={false} />
-            <BowlerCard bowler={players.bowler} teamName={teams.bowling} />
-          </div>
-        )}
-
-        {/* Improvement #3 — Low-height Match Context / Analytics Panel (Occupies 35% height) */}
-        {!isScoreOnly && !isCompact && (
-          <MatchAnalyticsPanel matchData={matchData} />
-        )}
-
-        {/* Improvement #6 — Visual Innings Progression Timeline */}
-        {!isScoreOnly && !isCompact && (
-          <InningsTimeline matchData={matchData} />
         )}
       </div>
-
-      {/* Continuous Infinite Bottom Marquee Ticker */}
-      {!isScoreOnly && (
-        <div className="bottom-ticker-fixed-wrapper">
-          <BroadcastTicker matchData={matchData} />
-        </div>
-      )}
     </div>
   );
 }
