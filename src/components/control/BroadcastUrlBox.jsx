@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Copy, Check, ExternalLink, AlertCircle } from "lucide-react";
+import { Copy, Check, ExternalLink } from "lucide-react";
 
 export function BroadcastUrlBox({ matchId }) {
   const [copied, setCopied] = useState(false);
 
   const fullUrl = `${window.location.origin}/live/${matchId}`;
-  const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 
   const handleCopy = () => {
     navigator.clipboard.writeText(fullUrl);
@@ -44,15 +43,6 @@ export function BroadcastUrlBox({ matchId }) {
             <span>Open Page</span>
           </Link>
         </div>
-
-        {isLocalhost && (
-          <div className="local-url-warning">
-            <AlertCircle size={14} className="warning-icon" />
-            <span>
-              <strong>LOCAL MACHINE URL:</strong> This URL is only accessible on this laptop. For OBS on a separate laptop, use your network IP or public URL.
-            </span>
-          </div>
-        )}
       </div>
     </div>
   );

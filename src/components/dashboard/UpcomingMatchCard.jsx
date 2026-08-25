@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { MonitorPlay, SlidersHorizontal, MapPin, Calendar } from "lucide-react";
 import { getTeamInitials } from "../../utils/teamLogos";
 
 export function UpcomingMatchCard({ match }) {
@@ -21,10 +20,8 @@ export function UpcomingMatchCard({ match }) {
   return (
     <div className="card-broadcast-match upcoming-card">
       <div className="card-top-bar">
-        <div className="card-upcoming-chip">
-          <span>UPCOMING</span>
-        </div>
-        <span className="card-format-tag">SCHEDULED</span>
+        <span className="card-upcoming-chip">Upcoming</span>
+        <span className="card-format-tag">Scheduled</span>
       </div>
 
       <div className="card-versus-row">
@@ -40,27 +37,18 @@ export function UpcomingMatchCard({ match }) {
       </div>
 
       <div className="card-schedule-info">
-        <div className="schedule-item">
-          <Calendar size={12} />
-          <span>{dateStr}</span>
-        </div>
+        <div className="schedule-item">{dateStr}</div>
         <div className="title-item">{title}</div>
       </div>
 
       <div className="card-footer-bar">
-        <div className="venue-group">
-          <MapPin size={11} className="venue-icon" />
-          <span className="venue-name">{venue}</span>
-        </div>
-
+        <span className="venue-name">{venue}</span>
         <div className="card-actions-flex">
-          <Link to={`/live/${matchId}`} className="btn-card-action live" aria-label="Launch Overlay">
-            <MonitorPlay size={13} />
-            <span>Overlay</span>
+          <Link to={`/live/${matchId}`} className="btn-card-action live">
+            Overlay
           </Link>
-          <Link to={`/control/${matchId}`} className="btn-card-action control" aria-label="Open Control">
-            <SlidersHorizontal size={13} />
-            <span>Control</span>
+          <Link to={`/control/${matchId}`} className="btn-card-action control">
+            Control
           </Link>
         </div>
       </div>

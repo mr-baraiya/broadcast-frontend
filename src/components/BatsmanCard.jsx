@@ -12,7 +12,7 @@ export function BatsmanCard({ batsman, teamName = "SL", isStriker = false }) {
   const sixes = batsman?.sixes ?? 0;
   const sr = formatStrikeRate(batsman?.strike_rate ?? 0);
 
-  const portraitUrl = getPlayerPortrait(batsman);
+  const portraitUrl = getPlayerPortrait(batsman, isStriker ? "striker" : "nonStriker");
   const initials = getTeamInitials(teamName);
 
   return (
@@ -28,7 +28,16 @@ export function BatsmanCard({ batsman, teamName = "SL", isStriker = false }) {
         <div className="card-top-body">
           {/* Player Portrait Cutout */}
           <div className="portrait-container">
-            <img src={portraitUrl} alt={name} className="player-portrait-img" loading="eager" />
+            <img
+              src={portraitUrl}
+              alt={name}
+              className="player-portrait-img"
+              loading="eager"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}`;
+              }}
+            />
           </div>
 
           <div className="player-main-info">

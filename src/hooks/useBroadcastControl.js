@@ -29,14 +29,19 @@ export function useBroadcastControl(matchId, socketSendFunc = null) {
   const updateToggle = useCallback((key, value) => {
     setControlState((prev) => {
       const updated = { ...prev, [key]: value };
-      
+      console.log(`[useBroadcastControl] Updating toggle ${key} -> ${value}`, updated);
+
       // Save via REST API
       setIsSaving(true);
-      updateMatchControl(matchId, updated).finally(() => setIsSaving(false));
+      updateMatchControl(matchId, updated)
+        .then((res) => console.log("[useBroadcastControl REST POST success]", res))
+        .catch((err) => console.warn("[useBroadcastControl REST POST error]", err))
+        .finally(() => setIsSaving(false));
 
-      // Optional WebSocket dispatch for instant real-time sync
+      // Dispatch WebSocket state update
       if (socketSendFunc) {
         try {
+          console.log("[useBroadcastControl WS dispatch]", updated);
           socketSendFunc({
             type: "broadcast_state",
             match_id: matchId,

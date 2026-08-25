@@ -1,10 +1,9 @@
 import axios from "axios";
 import { MOCK_MATCH_DATA } from "./mockMatchData";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:6020";
+import { getApiBaseUrl } from "../utils/config";
 
 export const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: getApiBaseUrl(),
   timeout: 8000,
   headers: {
     "Accept": "application/json"

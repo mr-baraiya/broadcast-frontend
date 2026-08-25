@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-
-const WS_BASE_URL = import.meta.env.VITE_WS_BASE_URL || "ws://localhost:6020";
+import { getWsBaseUrl } from "../utils/config";
 
 export function useMatchSocket(matchId, onMessageCallback) {
   const [connectionStatus, setConnectionStatus] = useState("disconnected");
@@ -20,7 +19,7 @@ export function useMatchSocket(matchId, onMessageCallback) {
         socketRef.current.close();
       }
 
-      const wsUrl = `${WS_BASE_URL}/ws/match/${matchId}`;
+      const wsUrl = `${getWsBaseUrl()}/ws/match/${matchId}`;
       setConnectionStatus("reconnecting");
 
       try {

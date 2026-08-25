@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { MonitorPlay, SlidersHorizontal, MapPin } from "lucide-react";
 import { formatRunsWickets, formatOvers, formatRunRate } from "../../utils/formatScore";
 import { getTeamInitials } from "../../utils/teamLogos";
 
@@ -38,14 +37,16 @@ export function LiveMatchCard({ match }) {
     ? formatOvers(score.overs)
     : "";
 
+  const formatTitle = title.split(",")[1]?.trim() || "Match";
+
   return (
     <div className="card-broadcast-match live-card">
       <div className="card-top-bar">
         <div className="card-live-chip">
           <span className="pill-dot red" />
-          <span>LIVE</span>
+          <span>Live</span>
         </div>
-        <span className="card-format-tag">{title.split(",")[1] || "FIXTURE"}</span>
+        <span className="card-format-tag">{formatTitle}</span>
       </div>
 
       <div className="card-teams-scores">
@@ -74,34 +75,22 @@ export function LiveMatchCard({ match }) {
 
       <div className="card-insights-row">
         {score.run_rate && (
-          <span className="insight-chip">
-            CRR {formatRunRate(score.run_rate)}
-          </span>
+          <span className="insight-chip">CRR {formatRunRate(score.run_rate)}</span>
         )}
-
         {score.partnership && (
-          <span className="insight-chip">
-            P'SHIP {score.partnership}
-          </span>
+          <span className="insight-chip">P {score.partnership}</span>
         )}
-
         <div className="situation-line">{statusText}</div>
       </div>
 
       <div className="card-footer-bar">
-        <div className="venue-group">
-          <MapPin size={11} className="venue-icon" />
-          <span className="venue-name">{venue}</span>
-        </div>
-
+        <span className="venue-name">{venue}</span>
         <div className="card-actions-flex">
-          <Link to={`/live/${matchId}`} className="btn-card-action live" aria-label="Launch Overlay">
-            <MonitorPlay size={13} />
-            <span>Launch Overlay</span>
+          <Link to={`/live/${matchId}`} className="btn-card-action live">
+            Overlay
           </Link>
-          <Link to={`/control/${matchId}`} className="btn-card-action control" aria-label="Open Control">
-            <SlidersHorizontal size={13} />
-            <span>Open Control</span>
+          <Link to={`/control/${matchId}`} className="btn-card-action control">
+            Control
           </Link>
         </div>
       </div>

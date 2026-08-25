@@ -6,7 +6,6 @@ import { SearchFilterBar } from "../components/dashboard/SearchFilterBar";
 import { LiveMatchCard } from "../components/dashboard/LiveMatchCard";
 import { UpcomingMatchCard } from "../components/dashboard/UpcomingMatchCard";
 import { SkeletonMatchCard } from "../components/dashboard/SkeletonMatchCard";
-import { Radio, Calendar, CircleAlert } from "lucide-react";
 import "../styles/dashboard.css";
 
 export function Dashboard() {
@@ -15,7 +14,7 @@ export function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeFilter, setActiveFilter] = useState("ALL"); // ALL, LIVE, UPCOMING
+  const [activeFilter, setActiveFilter] = useState("ALL");
 
   const fetchData = () => {
     setIsLoading(true);
@@ -25,7 +24,6 @@ export function Dashboard() {
         let liveList = (liveRes && liveRes.matches) || [];
         let upcomingList = (upcomingRes && upcomingRes.matches) || [];
 
-        // Fallback default match if live endpoint returns empty list during off-hours
         if (liveList.length === 0) {
           liveList = [
             {
@@ -33,7 +31,7 @@ export function Dashboard() {
               title: "India vs Sri Lanka, 2nd Test",
               venue: "Sinhalese Sports Club, Colombo",
               status: "LIVE",
-              status_text: "Day 3: Stumps - Sri Lanka trail by 238 runs",
+              status_text: "Day 3: Stumps — Sri Lanka trail by 238 runs",
               teams: ["SL", "IND"],
               score: { team: "SL", runs: 265, wickets: 8, overs: 83.4, run_rate: 3.17, partnership: "35 (92)" }
             }
@@ -50,9 +48,7 @@ export function Dashboard() {
       .finally(() => setIsLoading(false));
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useEffect(() => { fetchData(); }, []);
 
   const filterMatch = (m) => {
     if (!searchTerm) return true;
@@ -64,8 +60,15 @@ export function Dashboard() {
     return title.includes(term) || venue.includes(term) || teams.includes(term) || id.includes(term);
   };
 
+  const hasRealTeams = (m) => {
+    const teams = Array.isArray(m.teams) ? m.teams : [];
+    if (teams.length < 2) return false;
+    const placeholders = ["team a", "team b", "tba", "tbd", "", "team1", "team2"];
+    return teams.every(t => t && !placeholders.includes(t.toLowerCase().trim()));
+  };
+
   const filteredLive = liveMatches.filter(filterMatch);
-  const filteredUpcoming = upcomingMatches.filter(filterMatch);
+  const filteredUpcoming = upcomingMatches.filter(hasRealTeams).filter(filterMatch);
 
   const showLiveSection = activeFilter === "ALL" || activeFilter === "LIVE";
   const showUpcomingSection = activeFilter === "ALL" || activeFilter === "UPCOMING";
@@ -81,14 +84,12 @@ export function Dashboard() {
       />
 
       <main className="dashboard-main-container">
-        {/* Command Center Operational Summary Counters */}
         <CommandSummaryBar
           liveCount={liveMatches.length}
           upcomingCount={upcomingMatches.length}
           isConnected={!isError}
         />
 
-        {/* Search & Filter Bar */}
         <SearchFilterBar
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
@@ -96,35 +97,27 @@ export function Dashboard() {
           onFilterChange={setActiveFilter}
         />
 
-        {/* Error State Banner */}
         {isError && (
           <div className="error-banner-box">
-            <CircleAlert size={20} className="error-icon" />
             <div className="error-text">
-              <strong>BACKEND CONNECTION PROBLEM:</strong> Unable to load live match feeds from backend server.
+              <strong>Backend connection failed.</strong> Unable to load live match feeds.
             </div>
-            <button className="btn-table-refresh" onClick={fetchData}>
-              Retry Connection
-            </button>
+            <button className="btn-table-refresh" onClick={fetchData}>Retry</button>
           </div>
         )}
 
-        {/* LIVE NOW Section */}
         {showLiveSection && (
           <section className="console-section">
             <div className="section-title-bar">
               <div className="title-left-group">
-                <Radio size={18} className="section-icon live" />
-                <h2>LIVE NOW</h2>
+                <h2>Live Now</h2>
               </div>
-              <span className="match-counter red">● {filteredLive.length} ACTIVE</span>
+              <span className="match-counter red">{filteredLive.length} Active</span>
             </div>
 
             {isLoading ? (
               <div className="cards-3col-grid">
-                <SkeletonMatchCard />
-                <SkeletonMatchCard />
-                <SkeletonMatchCard />
+                <SkeletonMatchCard /><SkeletonMatchCard /><SkeletonMatchCard />
               </div>
             ) : filteredLive.length > 0 ? (
               <div className="cards-3col-grid">
@@ -134,29 +127,25 @@ export function Dashboard() {
               </div>
             ) : (
               <div className="broadcast-empty-card">
-                <Radio size={32} className="empty-icon" />
-                <h3>No Live Matches Found</h3>
-                <p>There are currently no active live match streams matching your query.</p>
+                <h3>No live matches found</h3>
+                <p>There are no active streams matching your query.</p>
               </div>
             )}
           </section>
         )}
 
-        {/* UPCOMING Section */}
         {showUpcomingSection && (filteredUpcoming.length > 0 || activeFilter === "UPCOMING") && (
-          <section className="console-section" style={{ marginTop: "2rem" }}>
+          <section className="console-section" style={{ marginTop: "1.5rem" }}>
             <div className="section-title-bar">
               <div className="title-left-group">
-                <Calendar size={18} className="section-icon upcoming" />
-                <h2>UPCOMING MATCHES</h2>
+                <h2>Upcoming</h2>
               </div>
-              <span className="match-counter cyan">{filteredUpcoming.length} SCHEDULED</span>
+              <span className="match-counter">{filteredUpcoming.length} Scheduled</span>
             </div>
 
             {isLoading ? (
               <div className="cards-3col-grid">
-                <SkeletonMatchCard />
-                <SkeletonMatchCard />
+                <SkeletonMatchCard /><SkeletonMatchCard />
               </div>
             ) : filteredUpcoming.length > 0 ? (
               <div className="cards-3col-grid">
@@ -166,9 +155,8 @@ export function Dashboard() {
               </div>
             ) : (
               <div className="broadcast-empty-card">
-                <Calendar size={32} className="empty-icon" />
-                <h3>No Upcoming Matches Scheduled</h3>
-                <p>No upcoming matches match your filter criteria.</p>
+                <h3>No upcoming matches</h3>
+                <p>No upcoming matches match your filter.</p>
               </div>
             )}
           </section>

@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
-import { getMatchFull } from "../services/api";
+import { getMatchFull, getMatchControl } from "../services/api";
 import { normalizeMatchData } from "../utils/normalizeMatch";
 import { useMatchSocket } from "./useMatchSocket";
+import { subscribeRegistryUpdate } from "../utils/teamLogos";
 
 const DEFAULT_CONTROL = {
   showScoreboard: true,
@@ -21,13 +22,21 @@ export function useMatch(matchId) {
   const [triggerWicketAnim, setTriggerWicketAnim] = useState(false);
   const [triggerNewBallAnim, setTriggerNewBallAnim] = useState(false);
 
-  // Initial REST Snapshot fetch
+  // Initial REST Snapshot & Control State fetch
   useEffect(() => {
     if (!matchId) return;
 
     let isMounted = true;
     setIsLoading(true);
 
+    // Fetch control state
+    getMatchControl(matchId).then((res) => {
+      if (isMounted && res && res.control) {
+        setControlState((prev) => ({ ...prev, ...res.control }));
+      }
+    }).catch(() => {});
+
+    // Fetch full match data
     getMatchFull(matchId)
       .then((raw) => {
         if (isMounted) {
@@ -48,20 +57,35 @@ export function useMatch(matchId) {
     };
   }, [matchId]);
 
+  // Subscribe to teamLogos registry updates
+  useEffect(() => {
+    const unsub = subscribeRegistryUpdate(() => {
+      setMatchData((prev) => (prev ? { ...prev } : prev));
+    });
+    return unsub;
+  }, []);
+
   // Handle incoming WebSocket messages
   const handleSocketMessage = useCallback((wsPayload) => {
     if (!wsPayload) return;
 
-    if (wsPayload.type === "broadcast_state" && wsPayload.data) {
-      setControlState((prev) => ({ ...prev, ...wsPayload.data }));
+    console.log("[useMatch WS Message]", wsPayload.type, wsPayload);
+
+    if (wsPayload.type === "broadcast_state") {
+      const stateData = wsPayload.data || wsPayload.control;
+      if (stateData) {
+        console.log("[useMatch Control State Update]", stateData);
+        setControlState((prev) => ({ ...prev, ...stateData }));
+      }
       return;
     }
 
     if (wsPayload.control) {
+      console.log("[useMatch Control State from payload]", wsPayload.control);
       setControlState((prev) => ({ ...prev, ...wsPayload.control }));
     }
 
-    if (wsPayload.type === "match_snapshot" || wsPayload.type === "match_update") {
+    if (wsPayload.type === "match_snapshot" || wsPayload.type === "match_update" || wsPayload.type === "media_update") {
       const newNormalized = normalizeMatchData(wsPayload.data || wsPayload);
       if (!newNormalized) return;
 
@@ -93,6 +117,14 @@ export function useMatch(matchId) {
     }
   }, []);
 
+  const refetch = useCallback(() => {
+    if (!matchId) return;
+    getMatchFull(matchId).then((raw) => {
+      const normalized = normalizeMatchData(raw);
+      setMatchData(normalized);
+    }).catch(() => {});
+  }, [matchId]);
+
   const { connectionStatus, changes, sendMessage } = useMatchSocket(matchId, handleSocketMessage);
 
   return {
@@ -104,6 +136,7 @@ export function useMatch(matchId) {
     connectionStatus,
     changes,
     sendMessage,
+    refetch,
     animations: {
       score: triggerScoreAnim,
       wicket: triggerWicketAnim,

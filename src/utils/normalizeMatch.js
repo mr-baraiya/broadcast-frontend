@@ -7,7 +7,7 @@ export function normalizeMatchData(rawPayload) {
 
   const teams = Array.isArray(match.teams) && match.teams.length >= 2
     ? match.teams
-    : ["SRI LANKA", "INDIA"];
+    : (match.title ? match.title.split(" vs ") : ["TEAM A", "TEAM B"]);
 
   const battingTeam = score.team || teams[0];
   const bowlingTeam = teams.find(t => t.toLowerCase() !== battingTeam.toLowerCase()) || teams[1];
@@ -54,7 +54,6 @@ export function normalizeMatchData(rawPayload) {
         return { ...item, event: "DOT", label: "0" };
       }
 
-      // Filter out non-ball numbers or weird strings (e.g. 82)
       if (typeof runs === "number" && runs >= 0 && runs <= 6) {
         return { ...item, label: `${runs}` };
       }
@@ -64,8 +63,8 @@ export function normalizeMatchData(rawPayload) {
     .filter(Boolean);
 
   // Group deliveries into Over A (Current Over) and Over B (Previous Over)
-  const overCurrentNum = score.overs ? Math.floor(score.overs) : 44;
-  const overPrevNum = overCurrentNum > 1 ? overCurrentNum - 1 : 43;
+  const overCurrentNum = score.overs ? Math.floor(score.overs) : 0;
+  const overPrevNum = overCurrentNum > 1 ? overCurrentNum - 1 : 0;
 
   const overPrevBalls = cleanBalls.slice(6, 12);
   const overCurrBalls = cleanBalls.slice(0, 6);
@@ -85,41 +84,34 @@ export function normalizeMatchData(rawPayload) {
       teamB: teams[1]
     },
     status: match.status || "LIVE",
-    statusText: match.status_text || match.status || "LIVE",
-    venue: match.venue || "Sinhalese Sports Club, Colombo",
+    statusText: match.status_text || match.status || "",
+    venue: match.venue || null,
     date: match.date || null,
 
     score: {
       team: score.team || battingTeam,
-      runs: score.runs ?? 167,
-      wickets: score.wickets ?? 5,
-      overs: score.overs ?? 43.2,
-      crr: score.run_rate ?? data.crr ?? 3.85,
+      runs: score.runs ?? 0,
+      wickets: score.wickets ?? 0,
+      overs: score.overs ?? 0,
+      crr: score.run_rate ?? data.crr ?? null,
       rrr: data.rrr ?? null,
-      target: data.target ?? 504,
-      trailBy: data.trail_by || "SL trail by 336 runs",
-      partnership: data.partnership || "30 (51)",
-      lastWicket: data.last_wicket || "D de Silva 8 (14)",
-      nextBatsman: data.next_batsman || "N Dickwella",
+      target: data.target ?? null,
+      trailBy: data.trail_by || null,
+      partnership: data.partnership || null,
+      lastWicket: data.last_wicket || null,
+      nextBatsman: data.next_batsman || null,
       toss: data.toss || null,
       inningNumber: data.inning_number || 1
     },
 
-    winProbability: data.win_probability || {
-      teamA: "2%",
-      draw: "20%",
-      teamB: "78%"
-    },
+    winProbability: data.win_probability || null,
 
-    sessionInfo: data.session_info || {
-      session: "Day 3 - Session 2",
-      oversLeftToday: "57.4"
-    },
+    sessionInfo: data.session_info || null,
 
     players: {
-      striker: striker || { name: "P Sooriyaban", runs: 79, balls: 126, fours: 9, sixes: 0, strike_rate: 62.70 },
-      nonStriker: nonStriker || { name: "S Dinusha", runs: 19, balls: 27, fours: 1, sixes: 1, strike_rate: 70.37 },
-      bowler: currentBowler || { name: "M Siraj", wickets: 0, runs: 24, overs: 7.2, maidens: 0, economy: 3.27 },
+      striker: striker,
+      nonStriker: nonStriker,
+      bowler: currentBowler,
       allBatsmen: batsmen,
       allBowlers: bowlers
     },

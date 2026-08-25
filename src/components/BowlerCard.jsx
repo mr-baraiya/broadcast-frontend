@@ -11,7 +11,7 @@ export function BowlerCard({ bowler, teamName = "IND" }) {
   const maidens = bowler?.maidens ?? 0;
   const econ = bowler?.economy !== null && bowler?.economy !== undefined ? bowler.economy.toFixed(2) : "—";
 
-  const portraitUrl = getPlayerPortrait(bowler);
+  const portraitUrl = getPlayerPortrait(bowler, "bowler");
   const initials = getTeamInitials(teamName);
 
   return (
@@ -27,7 +27,16 @@ export function BowlerCard({ bowler, teamName = "IND" }) {
         <div className="card-top-body">
           {/* Player Portrait Cutout */}
           <div className="portrait-container">
-            <img src={portraitUrl} alt={name} className="player-portrait-img" loading="eager" />
+            <img
+              src={portraitUrl}
+              alt={name}
+              className="player-portrait-img"
+              loading="eager"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name)}`;
+              }}
+            />
           </div>
 
           <div className="player-main-info">

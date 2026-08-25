@@ -1,10 +1,11 @@
 import React from "react";
 import { Shield } from "lucide-react";
 import { formatRunsWickets, formatOvers } from "../utils/formatScore";
-import { getTeamInitials } from "../utils/teamLogos";
+import { getTeamInitials, getTeamLogoUrl } from "../utils/teamLogos";
 
 export function TeamScore({ teamName, runs, wickets, overs, isBatting, align = "left", animScore = false }) {
   const initials = getTeamInitials(teamName);
+  const logoUrl = getTeamLogoUrl(teamName);
   const formattedScore = runs !== null && runs !== undefined
     ? formatRunsWickets(runs, wickets)
     : "YET TO BAT";
@@ -13,8 +14,19 @@ export function TeamScore({ teamName, runs, wickets, overs, isBatting, align = "
   return (
     <div className={`ref-team-pill ${align} ${isBatting ? "batting-active" : "non-batting"}`}>
       <div className="ref-team-flag-wrap">
-        <Shield size={20} className="shield-icon-tv" />
-        <span className="ref-team-initials">{initials}</span>
+        {logoUrl ? (
+          <img
+            src={logoUrl}
+            alt={teamName}
+            className="team-logo-tv"
+            onError={(e) => { e.currentTarget.style.display = "none"; }}
+          />
+        ) : (
+          <>
+            <Shield size={20} className="shield-icon-tv" />
+            <span className="ref-team-initials">{initials}</span>
+          </>
+        )}
       </div>
 
       <div className="ref-team-info">
@@ -31,3 +43,4 @@ export function TeamScore({ teamName, runs, wickets, overs, isBatting, align = "
     </div>
   );
 }
+
