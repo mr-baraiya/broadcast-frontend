@@ -1,0 +1,71 @@
+/* Score Update Pulse */
+@keyframes scorePulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+    color: #facc15;
+    text-shadow: 0 0 24px rgba(250, 204, 21, 0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-score {
+  animation: scorePulse 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Wicket Alert Glow */
+@keyframes wicketGlow {
+  0% {
+    transform: scale(1);
+    background-color: transparent;
+  }
+  40% {
+    transform: scale(1.15);
+    background-color: rgba(239, 68, 68, 0.4);
+    box-shadow: 0 0 30px rgba(239, 68, 68, 0.8);
+  }
+  100% {
+    transform: scale(1);
+    background-color: transparent;
+  }
+}
+
+.animate-wicket {
+  animation: wicketGlow 0.75s ease-in-out;
+}
+
+/* New Delivery Pill Entrance */
+@keyframes deliveryEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.85);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-pill-enter {
+  animation: deliveryEnter 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Commentary Fade In */
+@keyframes commentaryFade {
+  0% {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-commentary {
+  animation: commentaryFade 0.35s ease-out;
+}
