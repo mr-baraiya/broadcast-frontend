@@ -1,3 +1,5 @@
+import { calculateStrikeRate, calculateEconomy, oversToLegalBalls } from "./formatScore";
+
 export function normalizeMatchData(rawPayload) {
   if (!rawPayload) return null;
 
@@ -17,11 +19,34 @@ export function normalizeMatchData(rawPayload) {
     ? data.current_batsmen
     : batsmen.filter(b => b.active);
 
-  const striker = currentBatsmen[0] || batsmen[0] || null;
-  const nonStriker = currentBatsmen[1] || batsmen[1] || null;
+  let rawStriker = currentBatsmen[0] || batsmen[0] || null;
+  let rawNonStriker = currentBatsmen[1] || batsmen[1] || null;
+
+  // Precision Strike Rate calculation (72.73, 70.83)
+  const striker = rawStriker ? {
+    ...rawStriker,
+    strike_rate: (rawStriker.runs !== null && rawStriker.balls > 0)
+      ? parseFloat(calculateStrikeRate(rawStriker.runs, rawStriker.balls))
+      : (rawStriker.strike_rate || 0)
+  } : null;
+
+  const nonStriker = rawNonStriker ? {
+    ...rawNonStriker,
+    strike_rate: (rawNonStriker.runs !== null && rawNonStriker.balls > 0)
+      ? parseFloat(calculateStrikeRate(rawNonStriker.runs, rawNonStriker.balls))
+      : (rawNonStriker.strike_rate || 0)
+  } : null;
 
   const bowlers = Array.isArray(data.bowlers) ? data.bowlers : [];
-  const currentBowler = data.current_bowler || bowlers[0] || null;
+  let rawBowler = data.current_bowler || bowlers[0] || null;
+
+  // Precision Economy calculation (e.g. 72 runs in 18.2 overs -> 3.93)
+  const bowler = rawBowler ? {
+    ...rawBowler,
+    economy: (rawBowler.runs !== null && rawBowler.overs)
+      ? parseFloat(calculateEconomy(rawBowler.runs, rawBowler.overs))
+      : (rawBowler.economy || 0)
+  } : null;
 
   const commentary = Array.isArray(data.commentary) ? data.commentary : [];
 
@@ -62,6 +87,36 @@ export function normalizeMatchData(rawPayload) {
     })
     .filter(Boolean);
 
+  // Derive last ball delivery directly from cleanBalls[0] / commentary[0] (Fixes LAST BALL mismatch)
+  const latestDelivery = cleanBalls[0] || null;
+  const latestComm = commentary[0] || null;
+
+  let lastBallBadge = "DOT";
+  let lastBallLabel = "LAST BALL: DOT";
+  let lastBallText = "Delivery complete.";
+
+  if (latestDelivery) {
+    if (latestDelivery.label === "W") {
+      lastBallBadge = "WICKET";
+      lastBallLabel = "LAST BALL: WICKET";
+    } else if (latestDelivery.label === "6") {
+      lastBallBadge = "SIX";
+      lastBallLabel = "LAST BALL: SIX";
+    } else if (latestDelivery.label === "4") {
+      lastBallBadge = "FOUR";
+      lastBallLabel = "LAST BALL: FOUR";
+    } else {
+      lastBallBadge = `${latestDelivery.label} RUNS`;
+      lastBallLabel = `LAST BALL: ${latestDelivery.label} RUNS`;
+    }
+  }
+
+  if (latestComm && latestComm.commentary) {
+    lastBallText = latestComm.commentary;
+  } else if (bowler && striker && latestDelivery) {
+    lastBallText = `${bowler.name} to ${striker.name} — ${latestDelivery.label === "W" ? "WICKET!" : `${latestDelivery.label} run(s)`}`;
+  }
+
   // Group deliveries into Over A (Current Over) and Over B (Previous Over)
   const overCurrentNum = score.overs ? Math.floor(score.overs) : 0;
   const overPrevNum = overCurrentNum > 1 ? overCurrentNum - 1 : 0;
@@ -72,7 +127,9 @@ export function normalizeMatchData(rawPayload) {
   const overPrevTotal = overPrevBalls.reduce((acc, b) => acc + (typeof b.runs === "number" ? b.runs : 0), 0);
   const overCurrTotal = overCurrBalls.reduce((acc, b) => acc + (typeof b.runs === "number" ? b.runs : 0), 0);
 
-  const latestEvent = commentary[0] || null;
+  // Innings State (1st INNINGS / 2nd INNINGS)
+  const rawInningNum = data.inning_number || (data.innings && data.innings.number) || 1;
+  const inningLabel = rawInningNum === 1 ? "1st INNINGS" : `${rawInningNum}nd INNINGS`;
 
   return {
     id: match.id || "",
@@ -101,17 +158,24 @@ export function normalizeMatchData(rawPayload) {
       lastWicket: data.last_wicket || null,
       nextBatsman: data.next_batsman || null,
       toss: data.toss || null,
-      inningNumber: data.inning_number || 1
+      inningNumber: rawInningNum,
+      inningLabel: inningLabel
+    },
+
+    lastBall: {
+      badge: lastBallBadge,
+      label: lastBallLabel,
+      text: lastBallText,
+      event: latestDelivery ? latestDelivery.event : null
     },
 
     winProbability: data.win_probability || null,
-
     sessionInfo: data.session_info || null,
 
     players: {
       striker: striker,
       nonStriker: nonStriker,
-      bowler: currentBowler,
+      bowler: bowler,
       allBatsmen: batsmen,
       allBowlers: bowlers
     },
@@ -127,7 +191,7 @@ export function normalizeMatchData(rawPayload) {
 
     commentary,
     recentBalls: cleanBalls,
-    latestEvent,
+    latestEvent: latestComm,
     dataStatus: data.data_status || "fresh",
     updatedAt: rawPayload.updated_at || new Date().toISOString()
   };

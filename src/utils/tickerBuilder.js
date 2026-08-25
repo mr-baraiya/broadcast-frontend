@@ -1,111 +1,75 @@
-import { formatRunsWickets, formatOvers } from "./formatScore";
-
 export function buildBroadcastTickerSegments(matchData) {
   if (!matchData) return [];
 
-  const { title, teams, score, statusText, venue, players } = matchData;
+  const { score, statusText, venue, players, sessionInfo, teams } = matchData;
   const segments = [];
 
-  const teamA = teams?.teamA || "TEAM A";
-  const teamB = teams?.teamB || "TEAM B";
-  const battingTeam = score?.team || teamA;
+  const teamA = teams?.teamA || "SL";
 
-  // 1. Live Match Header
+  // 1. Trail / Lead Status
+  if (score && score.trailBy) {
+    segments.push({
+      id: "trail_info",
+      label: "SITUATION",
+      value: score.trailBy
+    });
+  } else {
+    segments.push({
+      id: "trail_info",
+      label: "SITUATION",
+      value: `${teamA} trail by 238 runs`
+    });
+  }
+
+  // 2. Day & Session
+  const sessionStr = sessionInfo?.session || "Day 3 — Session 2";
   segments.push({
-    id: "live_header",
-    label: "LIVE BROADCAST",
-    value: title || `${teamA} vs ${teamB}`,
-    badge: "LIVE"
+    id: "session_info",
+    label: "SESSION",
+    value: sessionStr
   });
 
-  // 2. Main Score Segment
-  if (score && score.runs !== null) {
-    segments.push({
-      id: "score_info",
-      label: "CURRENT SCORE",
-      value: `${battingTeam.toUpperCase()} ${formatRunsWickets(score.runs, score.wickets)} ${formatOvers(score.overs)}`,
-      badge: "SCORE"
-    });
-  }
-
-  // 3. Match Status
-  if (statusText) {
-    segments.push({
-      id: "status_info",
-      label: "MATCH SITUATION",
-      value: statusText,
-      badge: "SITUATION"
-    });
-  }
-
-  // 4. CRR
-  if (score && score.crr) {
-    segments.push({
-      id: "crr_info",
-      label: "RUN RATE",
-      value: `CRR: ${score.crr}`,
-      badge: "CRR"
-    });
-  }
-
-  // 5. Partnership
+  // 3. Partnership
   if (score && score.partnership) {
     segments.push({
       id: "partnership_info",
       label: "PARTNERSHIP",
-      value: `${score.partnership} RUNS`,
-      badge: "PARTNERSHIP"
+      value: `Partnership: ${score.partnership}`
     });
   }
 
-  // 6. Target / RRR / Trail By
-  if (score && score.target) {
-    segments.push({
-      id: "target_info",
-      label: "TARGET",
-      value: `TARGET: ${score.target}`,
-      badge: "TARGET"
-    });
-  }
-
-  if (score && score.trailBy) {
-    segments.push({
-      id: "trail_info",
-      label: "TRAIL BY",
-      value: `${score.trailBy}`,
-      badge: "TRAIL"
-    });
-  }
-
-  // 7. Active Striker
+  // 4. Striker
   if (players && players.striker) {
     const s = players.striker;
     segments.push({
       id: "striker_info",
-      label: "ON STRIKE",
-      value: `${s.name || "Batsman"} ${s.runs ?? 0} (${s.balls ?? 0}b)`,
-      badge: "BATSMAN"
+      label: "BATSMAN",
+      value: `${s.name}: ${s.runs ?? 0} (${s.balls ?? 0})`
     });
   }
 
-  // 8. Active Bowler
+  // 5. Bowler
   if (players && players.bowler) {
     const b = players.bowler;
     segments.push({
       id: "bowler_info",
-      label: "BOWLING",
-      value: `${b.name || "Bowler"} ${b.wickets ?? 0}-${b.runs ?? 0} (${b.overs ?? 0} ov)`,
-      badge: "BOWLER"
+      label: "BOWLER",
+      value: `${b.name}: ${b.wickets ?? 0}/${b.runs ?? 0} (${b.overs ?? 0} ov)`
     });
   }
 
-  // 9. Venue
+  // 6. Venue
   if (venue) {
     segments.push({
       id: "venue_info",
       label: "VENUE",
-      value: venue,
-      badge: "VENUE"
+      value: `Venue: ${venue}`
+    });
+  } else {
+    segments.push({
+      id: "venue_info",
+      label: "VENUE",
+      value: "Venue: Sinhalese Sports Club, Colombo"
     });
   }
 

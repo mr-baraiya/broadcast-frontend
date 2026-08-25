@@ -7,6 +7,7 @@ import { LiveMatchSummary } from "../components/control/LiveMatchSummary";
 import { DisplayControls } from "../components/control/DisplayControls";
 import { LayoutSelector } from "../components/control/LayoutSelector";
 import { MediaUploader } from "../components/control/MediaUploader";
+import { StadiumUploader } from "../components/control/StadiumUploader";
 import { BroadcastUrlBox } from "../components/control/BroadcastUrlBox";
 import { BroadcastPreview } from "../components/control/BroadcastPreview";
 import { EventLogMonitor } from "../components/control/EventLogMonitor";
@@ -57,6 +58,11 @@ export function ControlPanel() {
     if (refetch) refetch();
   };
 
+  const handleStadiumUpdate = () => {
+    addLog("Stadium background image updated on Vercel Blob", "media");
+    if (refetch) refetch();
+  };
+
   const matchTitle = matchData ? matchData.title : `Match ${targetId}`;
 
   return (
@@ -71,6 +77,7 @@ export function ControlPanel() {
           <div className="control-left-column">
             <DisplayControls controlState={controlState} onToggleChange={handleToggle} />
             <LayoutSelector currentLayout={controlState.layout} onLayoutChange={handleLayout} />
+            <StadiumUploader onStadiumUpdate={handleStadiumUpdate} />
             <MediaUploader matchData={matchData} onRefresh={handlePhotoRefresh} />
           </div>
 

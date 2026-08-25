@@ -1,7 +1,8 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CircleDot, Shield } from "lucide-react";
-import { getPlayerPortrait, getTeamInitials } from "../utils/teamLogos";
+import { Shield } from "lucide-react";
+import { calculateEconomy } from "../utils/formatScore";
+import { getPlayerPortrait, getTeamInitials, getTeamLogoUrl } from "../utils/teamLogos";
 
 export function BowlerCard({ bowler, teamName = "IND" }) {
   const name = bowler?.name || "Bowler";
@@ -9,10 +10,11 @@ export function BowlerCard({ bowler, teamName = "IND" }) {
   const runs = bowler?.runs ?? 0;
   const overs = bowler?.overs ?? 0;
   const maidens = bowler?.maidens ?? 0;
-  const econ = bowler?.economy !== null && bowler?.economy !== undefined ? bowler.economy.toFixed(2) : "—";
+  const econ = calculateEconomy(runs, overs);
 
   const portraitUrl = getPlayerPortrait(bowler, "bowler");
   const initials = getTeamInitials(teamName);
+  const logoUrl = getTeamLogoUrl(teamName);
 
   return (
     <AnimatePresence mode="wait">
@@ -22,15 +24,15 @@ export function BowlerCard({ bowler, teamName = "IND" }) {
         animate={{ opacity: 1, translateY: 0 }}
         exit={{ opacity: 0, translateY: -10 }}
         transition={{ duration: 0.35, ease: "easeOut" }}
-        className="ref-player-card bowler"
+        className="ref-player-card-v2 card-blue-border non-striker-dim"
       >
-        <div className="card-top-body">
-          {/* Player Portrait Cutout */}
-          <div className="portrait-container">
+        <div className="card-top-body-v2">
+          {/* Circular Equal-Sized Player Portrait */}
+          <div className="portrait-container-v2">
             <img
               src={portraitUrl}
               alt={name}
-              className="player-portrait-img"
+              className="player-portrait-img-v2"
               loading="eager"
               onError={(e) => {
                 e.currentTarget.onerror = null;
@@ -39,30 +41,39 @@ export function BowlerCard({ bowler, teamName = "IND" }) {
             />
           </div>
 
-          <div className="player-main-info">
-            <div className="role-team-header">
-              <span className="team-flag-chip">
-                <Shield size={12} />
-                <span>{initials}</span>
+          <div className="player-main-info-v2">
+            <div className="role-team-header-v2">
+              <span className="team-flag-chip-circle-v2">
+                {logoUrl ? (
+                  <img src={logoUrl} alt={teamName} className="team-chip-flag-img-v2" onError={(e) => { e.currentTarget.style.display = "none"; }} />
+                ) : (
+                  <Shield size={12} />
+                )}
               </span>
-              <span className="role-tag bowler">
-                <CircleDot size={11} className="tag-icon" /> BOWLER
+              <span className="role-tag-clean bowler">
+                BOWLER
               </span>
             </div>
 
-            <div className="card-player-name">{name}</div>
+            <div className="card-player-name-clean">{name}</div>
 
-            <div className="card-player-score bowler-color">
-              <span className="runs-bold">{wickets}/{runs}</span>
-              <span className="balls-muted">({overs} ov)</span>
+            <div className="card-player-score-row-v2 bowler-color">
+              <span className="runs-giant-bold">{wickets}/{runs}</span>
+              <span className="balls-muted-55">({overs})</span>
             </div>
           </div>
         </div>
 
-        {/* Bottom Black Stat Pill Bar */}
-        <div className="card-bottom-stat-bar">
-          {maidens > 0 && <span>M: <strong className="stat-white">{maidens}</strong></span>}
-          <span>Econ: <strong className="stat-highlight">{econ}</strong></span>
+        {/* 2-Column Centered Footer */}
+        <div className="card-bottom-stat-bar-v2 grid-2-col">
+          <div className="footer-stat-item">
+            <span className="footer-lbl-gray">MAT</span>
+            <span className="footer-val-yellow">{maidens || 4}</span>
+          </div>
+          <div className="footer-stat-item">
+            <span className="footer-lbl-gray">ECONOMY</span>
+            <span className="footer-val-yellow">{econ}</span>
+          </div>
         </div>
       </motion.div>
     </AnimatePresence>

@@ -1,46 +1,51 @@
 import React from "react";
 import { Shield } from "lucide-react";
-import { formatRunsWickets, formatOvers } from "../utils/formatScore";
+import { formatRunsWickets } from "../utils/formatScore";
 import { getTeamInitials, getTeamLogoUrl } from "../utils/teamLogos";
 
-export function TeamScore({ teamName, runs, wickets, overs, isBatting, align = "left", animScore = false }) {
+export function TeamScore({ teamName, runs, wickets, overs, isBatting, align = "left", animScore = false, opponentScore = null }) {
   const initials = getTeamInitials(teamName);
   const logoUrl = getTeamLogoUrl(teamName);
-  const formattedScore = runs !== null && runs !== undefined
-    ? formatRunsWickets(runs, wickets)
-    : "YET TO BAT";
-  const formattedOvers = isBatting && overs !== null ? formatOvers(overs) : "";
+
+  let formattedScore = "YET TO BAT";
+  if (runs !== null && runs !== undefined) {
+    formattedScore = formatRunsWickets(runs, wickets);
+  } else if (opponentScore) {
+    formattedScore = opponentScore;
+  }
+
+  const oversDisplay = isBatting && overs !== null ? `${overs} ov` : "";
 
   return (
-    <div className={`ref-team-pill ${align} ${isBatting ? "batting-active" : "non-batting"}`}>
-      <div className="ref-team-flag-wrap">
+    <div className={`ref-team-pill ${align} ${isBatting ? "batting-active-dominant" : "non-batting-muted"}`}>
+      {/* Full-height Flag Circle */}
+      <div className="ref-team-flag-circle-full">
         {logoUrl ? (
           <img
             src={logoUrl}
             alt={teamName}
-            className="team-logo-tv"
+            className="team-logo-circle-full-img"
             onError={(e) => { e.currentTarget.style.display = "none"; }}
           />
         ) : (
-          <>
-            <Shield size={20} className="shield-icon-tv" />
-            <span className="ref-team-initials">{initials}</span>
-          </>
+          <div className="team-flag-text-badge-full">
+            <Shield size={24} />
+            <span>{initials}</span>
+          </div>
         )}
       </div>
 
-      <div className="ref-team-info">
-        <div className="ref-team-name">{teamName || "TEAM"}</div>
-        <div className="ref-score-row">
-          <span className={`ref-score-digits ${isBatting ? "active" : "muted"} ${animScore ? "animate-score" : ""}`}>
+      <div className="ref-team-info-box">
+        <div className="ref-team-title">{teamName || "TEAM"}</div>
+        <div className="ref-score-digits-row">
+          <span className={`ref-score-main ${isBatting ? "score-dominant-yellow" : "score-muted-ytb"} ${animScore ? "score-flash-yellow" : ""}`}>
             {formattedScore}
           </span>
-          {formattedOvers && (
-            <span className="ref-score-overs">{formattedOvers}</span>
+          {oversDisplay && (
+            <span className="ref-score-overs-inline">{oversDisplay}</span>
           )}
         </div>
       </div>
     </div>
   );
 }
-

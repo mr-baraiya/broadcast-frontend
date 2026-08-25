@@ -1,55 +1,55 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Zap, Flame, Trophy, AlertTriangle } from "lucide-react";
+import { Zap, Flame, AlertTriangle, Plus } from "lucide-react";
 
 export function BroadcastEventOverlay({ activeEvent }) {
   if (!activeEvent) return null;
 
-  const { type, title, text, data } = activeEvent;
+  const { type, title, text } = activeEvent;
 
   const getEventStyle = () => {
     switch (type) {
       case "WICKET":
         return {
-          bg: "linear-gradient(135deg, rgba(239, 68, 68, 0.95) 0%, rgba(185, 28, 28, 0.98) 100%)",
-          border: "2px solid #f87171",
-          shadow: "0 0 40px rgba(239, 68, 68, 0.8)",
+          bg: "linear-gradient(135deg, rgba(220, 38, 38, 0.98) 0%, rgba(153, 27, 27, 0.98) 100%)",
+          border: "2px solid #ef4444",
+          shadow: "0 0 35px rgba(239, 68, 68, 0.85)",
           icon: AlertTriangle,
           textColor: "#ffffff",
           accentColor: "#fef2f2"
         };
       case "SIX":
         return {
-          bg: "linear-gradient(135deg, rgba(168, 85, 247, 0.95) 0%, rgba(126, 34, 206, 0.98) 100%)",
+          bg: "linear-gradient(135deg, rgba(147, 51, 234, 0.98) 0%, rgba(107, 33, 168, 0.98) 100%)",
           border: "2px solid #c084fc",
-          shadow: "0 0 40px rgba(168, 85, 247, 0.8)",
+          shadow: "0 0 35px rgba(168, 85, 247, 0.85)",
           icon: Flame,
           textColor: "#ffffff",
           accentColor: "#fef08a"
         };
       case "FOUR":
         return {
-          bg: "linear-gradient(135deg, rgba(234, 179, 8, 0.95) 0%, rgba(202, 138, 4, 0.98) 100%)",
+          bg: "linear-gradient(135deg, rgba(234, 179, 8, 0.98) 0%, rgba(202, 138, 4, 0.98) 100%)",
           border: "2px solid #fde047",
-          shadow: "0 0 40px rgba(234, 179, 8, 0.8)",
+          shadow: "0 0 35px rgba(234, 179, 8, 0.85)",
           icon: Zap,
           textColor: "#000000",
           accentColor: "#000000"
         };
-      case "MILESTONE":
+      case "RUNS":
         return {
-          bg: "linear-gradient(135deg, rgba(56, 189, 248, 0.95) 0%, rgba(3, 105, 161, 0.98) 100%)",
+          bg: "linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.98) 100%)",
           border: "2px solid #38bdf8",
-          shadow: "0 0 40px rgba(56, 189, 248, 0.8)",
-          icon: Trophy,
-          textColor: "#ffffff",
-          accentColor: "#fde047"
+          shadow: "0 0 24px rgba(56, 189, 248, 0.6)",
+          icon: Plus,
+          textColor: "#38bdf8",
+          accentColor: "#ffffff"
         };
       default:
         return {
           bg: "linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.98) 100%)",
           border: "2px solid #facc15",
-          shadow: "0 0 30px rgba(250, 204, 21, 0.5)",
+          shadow: "0 0 25px rgba(250, 204, 21, 0.5)",
           icon: Zap,
           textColor: "#ffffff",
           accentColor: "#facc15"
@@ -64,53 +64,48 @@ export function BroadcastEventOverlay({ activeEvent }) {
     <AnimatePresence>
       <motion.div
         key={type + title}
-        initial={{ opacity: 0, scale: 0.8, translateY: -20 }}
+        initial={{ opacity: 0, scale: 0.85, translateY: -15 }}
         animate={{ opacity: 1, scale: 1, translateY: 0 }}
-        exit={{ opacity: 0, scale: 0.9, translateY: 20 }}
-        transition={{ duration: 0.25, ease: "easeOut" }}
+        exit={{ opacity: 0, scale: 0.9, translateY: 15 }}
+        transition={{ duration: 0.22, ease: "easeOut" }}
         style={{
           position: "absolute",
-          top: "35%",
+          top: "13.5%",
           left: "50%",
-          transform: "translate(-50%, -50%)",
-          zIndex: 100,
+          transform: "translateX(-50%)",
+          zIndex: 120,
           background: style.bg,
           border: style.border,
           boxShadow: style.shadow,
-          borderRadius: "16px",
-          padding: "1.5rem 3rem",
+          borderRadius: "30px",
+          padding: type === "RUNS" ? "0.4rem 1.4rem" : "0.6rem 2.2rem",
           display: "flex",
-          flexDirection: "column",
           alignItems: "center",
-          gap: "0.5rem",
+          gap: "0.6rem",
           pointerEvents: "none",
-          minWidth: "420px",
           textAlign: "center"
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "0.8rem" }}>
-          <IconComponent size={36} color={style.textColor} />
+        <IconComponent size={type === "RUNS" ? 20 : 26} color={style.textColor} />
+        <span
+          style={{
+            fontSize: type === "RUNS" ? "1.4rem" : "2rem",
+            fontWeight: 900,
+            letterSpacing: "1.5px",
+            textTransform: "uppercase",
+            color: style.textColor,
+            lineHeight: 1
+          }}
+        >
+          {title}
+        </span>
+        {text && type !== "RUNS" && (
           <span
             style={{
-              fontSize: "3rem",
-              fontWeight: 900,
-              letterSpacing: "3px",
-              textTransform: "uppercase",
-              color: style.textColor,
-              lineHeight: 1
-            }}
-          >
-            {title}
-          </span>
-        </div>
-
-        {text && (
-          <span
-            style={{
-              fontSize: "1.2rem",
-              fontWeight: 700,
+              fontSize: "1rem",
+              fontWeight: 800,
               color: style.accentColor,
-              maxWidth: "480px"
+              marginLeft: "0.6rem"
             }}
           >
             {text}

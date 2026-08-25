@@ -1,33 +1,62 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
-export function VenueBackground() {
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:6020";
+const DEFAULT_STADIUM_URL = "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=1920&auto=format&fit=crop";
+
+export function VenueBackground({ matchData }) {
+  const [stadium, setStadium] = useState({
+    url: DEFAULT_STADIUM_URL,
+    overlay_opacity: 0.55,
+    blur: 4
+  });
+
+  const fetchStadiumBackground = () => {
+    axios.get(`${API_BASE_URL}/stadium/background`)
+      .then((res) => {
+        if (res.data && res.data.stadium) {
+          setStadium(res.data.stadium);
+        }
+      })
+      .catch((err) => console.debug("VenueBackground fetch error:", err));
+  };
+
+  useEffect(() => {
+    fetchStadiumBackground();
+
+    // Poll every 3 seconds for instant background image updates across all live screens
+    const interval = setInterval(fetchStadiumBackground, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div
-      style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        zIndex: 0,
-        pointerEvents: "none",
-        background: `
-          radial-gradient(ellipse at 50% 30%, rgba(30, 41, 59, 0.4) 0%, rgba(2, 6, 23, 0.95) 85%),
-          linear-gradient(180deg, rgba(15, 23, 42, 0.7) 0%, rgba(2, 6, 23, 0.98) 100%)
-        `,
-      }}
-    >
+    <div className="venue-background-root" style={{ position: "absolute", inset: 0, zIndex: 0, overflow: "hidden", pointerEvents: "none" }}>
+      {/* Stadium Photo Layer */}
       <div
+        className="stadium-photo-layer"
         style={{
           position: "absolute",
-          bottom: "-10%",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "120%",
-          height: "60%",
-          borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(56, 189, 248, 0.06) 0%, transparent 70%)",
-          filter: "blur(40px)",
+          inset: "-20px",
+          backgroundImage: `url(${stadium.url || DEFAULT_STADIUM_URL})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center center",
+          filter: `blur(${stadium.blur || 4}px)`,
+          transform: "scale(1.03)",
+          transition: "background-image 0.5s ease-in-out, filter 0.5s ease"
+        }}
+      />
+
+      {/* Production Dark Vignette Overlay */}
+      <div
+        className="stadium-vignette-overlay"
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: `
+            radial-gradient(ellipse at 50% 40%, rgba(10, 12, 16, ${stadium.overlay_opacity - 0.2}) 0%, rgba(10, 12, 16, ${stadium.overlay_opacity + 0.25}) 100%),
+            linear-gradient(180deg, rgba(10, 12, 16, 0.4) 0%, rgba(10, 12, 16, 0.95) 100%)
+          `
         }}
       />
     </div>

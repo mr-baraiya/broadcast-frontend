@@ -21,10 +21,11 @@ export function Scoreboard({ matchData, animScore }) {
     }
   }
 
-  const inningNum = score?.inningNumber || 1;
+  const rawInningNum = score?.inningNumber || 1;
+  const inningBadgeText = rawInningNum === 1 ? "1ST" : `${rawInningNum}ND`;
 
   return (
-    <div className="ref-top-scoreboard">
+    <div className="ref-top-scoreboard-container">
       <TeamScore
         teamName={teamA}
         runs={isTeamABatting ? score.runs : null}
@@ -35,9 +36,8 @@ export function Scoreboard({ matchData, animScore }) {
         animScore={isTeamABatting && animScore}
       />
 
-      <div className="ref-center-inning-pill">
-        <div className="inning-digit">{inningNum}</div>
-        <div className="inning-sublabel">INNINGS</div>
+      <div className="ref-center-oval-badge">
+        <div className="giant-inning-digit">{inningBadgeText}</div>
       </div>
 
       <TeamScore

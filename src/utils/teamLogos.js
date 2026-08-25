@@ -87,6 +87,33 @@ export function getTeamLogoUrl(teamName) {
     }
   }
 
+  const DEFAULT_FLAGS = {
+    india: "https://flagcdn.com/w80/in.png",
+    ind: "https://flagcdn.com/w80/in.png",
+    sri_lanka: "https://flagcdn.com/w80/lk.png",
+    sl: "https://flagcdn.com/w80/lk.png",
+    australia: "https://flagcdn.com/w80/au.png",
+    aus: "https://flagcdn.com/w80/au.png",
+    england: "https://flagcdn.com/w80/gb-eng.png",
+    eng: "https://flagcdn.com/w80/gb-eng.png",
+    pakistan: "https://flagcdn.com/w80/pk.png",
+    pak: "https://flagcdn.com/w80/pk.png",
+    south_africa: "https://flagcdn.com/w80/za.png",
+    sa: "https://flagcdn.com/w80/za.png",
+    new_zealand: "https://flagcdn.com/w80/nz.png",
+    nz: "https://flagcdn.com/w80/nz.png",
+    west_indies: "https://flagcdn.com/w80/jm.png",
+    wi: "https://flagcdn.com/w80/jm.png",
+    afghanistan: "https://flagcdn.com/w80/af.png",
+    afg: "https://flagcdn.com/w80/af.png",
+    bangladesh: "https://flagcdn.com/w80/bd.png",
+    ban: "https://flagcdn.com/w80/bd.png"
+  };
+
+  if (DEFAULT_FLAGS[key]) {
+    return DEFAULT_FLAGS[key];
+  }
+
   return null;
 }
 

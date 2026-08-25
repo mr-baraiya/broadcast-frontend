@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { Dashboard } from "./pages/Dashboard";
 import { LiveBroadcast } from "./pages/LiveBroadcast";
 import { ControlPanel } from "./pages/ControlPanel";
+import { OperatorInstructions } from "./pages/OperatorInstructions";
 import "./styles/broadcast.css";
 import "./styles/animations.css";
 import "./styles/dashboard.css";
@@ -13,6 +14,8 @@ export default function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Dashboard />} />
+        <Route path="/instructions" element={<OperatorInstructions />} />
+        <Route path="/help" element={<OperatorInstructions />} />
         <Route path="/live/:matchId" element={<LiveBroadcast />} />
         <Route path="/control/:matchId" element={<ControlPanel />} />
         <Route path="/live" element={<LiveBroadcast />} />

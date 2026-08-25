@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { BookOpen } from "lucide-react";
 
 export function ControlHeader({ matchTitle, matchId, connectionStatus }) {
   const isConnected = connectionStatus === "connected";
@@ -16,7 +17,25 @@ export function ControlHeader({ matchTitle, matchId, connectionStatus }) {
         </div>
       </div>
 
-      <div className="control-header-right">
+      <div className="control-header-right" style={{ display: "flex", alignItems: "center", gap: "0.8rem" }}>
+        <Link
+          to="/instructions"
+          target="_blank"
+          className="btn-back"
+          style={{
+            color: "#f0a500",
+            borderColor: "rgba(240, 165, 0, 0.4)",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.35rem",
+            textDecoration: "none"
+          }}
+          title="Open Operator Instructions Guide"
+        >
+          <BookOpen size={13} color="#f0a500" />
+          <span>Operator Guide</span>
+        </Link>
+
         <div className={`status-badge ${isConnected ? "connected" : "reconnecting"}`}>
           Feed: {isConnected ? "Connected" : "Reconnecting"}
         </div>

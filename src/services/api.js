@@ -1,5 +1,4 @@
 import axios from "axios";
-import { MOCK_MATCH_DATA } from "./mockMatchData";
 import { getApiBaseUrl } from "../utils/config";
 
 export const apiClient = axios.create({
@@ -15,14 +14,9 @@ export const getMatchFull = async (matchId) => {
     const res = await apiClient.get(`/match/${matchId}/full`);
     return res.data;
   } catch (err) {
-    console.warn(`[API] Failed to fetch REST match data for ${matchId}, using fallback:`, err.message);
-    try {
-      const stateRes = await apiClient.get(`/match/${matchId}/state`);
-      return stateRes.data;
-    } catch (stateErr) {
-      console.warn(`[API] State endpoint fallback failed. Serving development mock data.`);
-      return MOCK_MATCH_DATA;
-    }
+    console.warn(`[API] Primary full endpoint error for ${matchId}, trying state endpoint:`, err.message);
+    const stateRes = await apiClient.get(`/match/${matchId}/state`);
+    return stateRes.data;
   }
 };
 

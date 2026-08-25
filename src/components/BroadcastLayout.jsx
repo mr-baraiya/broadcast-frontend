@@ -4,16 +4,15 @@ import { Scoreboard } from "./Scoreboard";
 import { MatchSituationBar } from "./MatchSituationBar";
 import { BatsmanCard } from "./BatsmanCard";
 import { BowlerCard } from "./BowlerCard";
-import { RecentBalls } from "./RecentBalls";
-import { CommentaryTicker } from "./CommentaryTicker";
-import { MatchInfoCarousel } from "./broadcast/MatchInfoCarousel";
+import { MatchAnalyticsPanel } from "./MatchAnalyticsPanel";
 import { BroadcastTicker } from "./broadcast/BroadcastTicker";
 import { BroadcastEventOverlay } from "./broadcast/BroadcastEventOverlay";
+import { InningsTimeline } from "./InningsTimeline";
 
 export function BroadcastLayout({ matchData, connectionStatus, animations, controlState, activeEvent }) {
   if (!matchData) return null;
 
-  const { teams, players, latestEvent } = matchData;
+  const { teams, players } = matchData;
   const ctrl = controlState || {
     showScoreboard: true,
     showPlayers: true,
@@ -51,19 +50,14 @@ export function BroadcastLayout({ matchData, connectionStatus, animations, contr
           </div>
         )}
 
-        {/* Bottom Carousel & Timeline Stack */}
-        {!isScoreOnly && (
-          <div className="broadcast-bottom-group">
-            <MatchInfoCarousel matchData={matchData} />
+        {/* Improvement #3 — Low-height Match Context / Analytics Panel (Occupies 35% height) */}
+        {!isScoreOnly && !isCompact && (
+          <MatchAnalyticsPanel matchData={matchData} />
+        )}
 
-            {ctrl.showRecentBalls && (
-              <RecentBalls matchData={matchData} animNewBall={animations?.newBall} />
-            )}
-
-            {ctrl.showCommentary && (
-              <CommentaryTicker latestEvent={latestEvent} />
-            )}
-          </div>
+        {/* Improvement #6 — Visual Innings Progression Timeline */}
+        {!isScoreOnly && !isCompact && (
+          <InningsTimeline matchData={matchData} />
         )}
       </div>
 

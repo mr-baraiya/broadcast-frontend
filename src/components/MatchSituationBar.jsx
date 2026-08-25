@@ -4,93 +4,88 @@ import { formatRunRate } from "../utils/formatScore";
 export function MatchSituationBar({ matchData }) {
   if (!matchData) return null;
 
-  const { score, winProbability, sessionInfo, teams } = matchData;
-  const teamA = teams?.teamA || "TEAM A";
-  const teamB = teams?.teamB || "TEAM B";
+  const { score, sessionInfo, teams, oversTimeline } = matchData;
+  const teamA = teams?.teamA || "SRI LANKA";
 
-  const hasRow1 = !!(score?.crr || score?.partnership || score?.trailBy || winProbability);
-  const hasRow2 = !!(sessionInfo?.session || winProbability || sessionInfo?.oversLeftToday);
-  const hasRow3 = !!(score?.nextBatsman || score?.lastWicket);
+  const sess = sessionInfo || { session: "Day 3 Session 2" };
 
-  if (!hasRow1 && !hasRow2 && !hasRow3) return null;
+  const timeline = oversTimeline || {
+    prevOverNum: 82,
+    prevOverBalls: [{ label: "0" }, { label: "0" }, { label: "0" }, { label: "W" }, { label: "0" }, { label: "0" }],
+    currOverNum: 83,
+    currOverBalls: [{ label: "0" }, { label: "0" }, { label: "1" }, { label: "0" }, { label: "0" }, { label: "0" }]
+  };
 
   return (
-    <div className="ref-situation-container">
-      {/* Row 1: CRR, Partnership, Win Probability & Trail Status */}
-      {hasRow1 && (
-        <div className="ref-sit-row-1">
-          {score?.crr && (
-            <div className="ref-pill red-pill">
-              <span className="pill-lbl">CRR:</span>
-              <span className="pill-val">{formatRunRate(score.crr)}</span>
-            </div>
-          )}
-
-          {score?.partnership && (
-            <div className="ref-pill red-pill">
-              <span className="pill-lbl">P'SHIP:</span>
-              <span className="pill-val">{score.partnership}</span>
-            </div>
-          )}
-
-          {winProbability && (
-            <div className="ref-prob-bar">
-              {winProbability.teamA && <span className="prob-segment team-a">{teamA} {winProbability.teamA}</span>}
-              {winProbability.teamB && <span className="prob-segment team-b">{teamB} {winProbability.teamB}</span>}
-            </div>
-          )}
-
-          {score?.trailBy && (
-            <div className="ref-blue-trail-panel">
-              {score.trailBy}
-            </div>
-          )}
+    <div className="hierarchy-situation-container">
+      {/* LEVEL 2 — Match Situation Bar */}
+      <div className="level-2-situation-bar">
+        <div className="sit-item trail-text">
+          {score?.trailBy || `${teamA} trail by 238 runs`}
         </div>
-      )}
 
-      {/* Row 2: Day/Session, Probability Pills, Overs Left */}
-      {hasRow2 && (
-        <div className="ref-sit-row-2">
-          {sessionInfo?.session && (
-            <div className="ref-pill pink-pill">
-              {sessionInfo.session}
-            </div>
-          )}
+        <div className="sit-divider">•</div>
 
-          {winProbability && (
-            <div className="ref-yellow-prob-group">
-              {winProbability.teamA && <span className="yellow-chip">{teamA}: {winProbability.teamA}</span>}
-              {winProbability.draw && <span className="yellow-chip">DRAW: {winProbability.draw}</span>}
-              {winProbability.teamB && <span className="yellow-chip">{teamB}: {winProbability.teamB}</span>}
-            </div>
-          )}
-
-          {sessionInfo?.oversLeftToday && (
-            <div className="ref-pill cyan-pill">
-              Overs left today: {sessionInfo.oversLeftToday}
-            </div>
-          )}
+        <div className="sit-item crr-text">
+          CRR <strong className="val-bright">{formatRunRate(score?.crr || 3.17)}</strong>
         </div>
-      )}
 
-      {/* Row 3: Next Batsman & Last Wicket */}
-      {hasRow3 && (
-        <div className="ref-sit-row-3">
-          {score?.nextBatsman && (
-            <div className="ref-pill blue-info-pill">
-              <span className="pill-lbl">Next Batsman:</span>
-              <span className="pill-val">{score.nextBatsman}</span>
+        {score?.partnership && (
+          <>
+            <div className="sit-divider">•</div>
+            <div className="sit-item pship-text">
+              <span className="sit-lbl-white">PARTNERSHIP</span>
+              <strong className="val-gold">{score.partnership}</strong>
             </div>
-          )}
+          </>
+        )}
 
-          {score?.lastWicket && (
-            <div className="ref-pill blue-info-pill right">
-              <span className="pill-lbl">Last Wkt:</span>
-              <span className="pill-val">{score.lastWicket}</span>
-            </div>
-          )}
+        <div className="sit-divider">•</div>
+
+        <div className="sit-item session-text">
+          {sess.session || "Day 3 Session 2"}
         </div>
-      )}
+      </div>
+
+      {/* LEVEL 3 — Live Information (Recent Overs Strip) */}
+      <div className="level-3-live-strip">
+        <div className="over-delivery-group">
+          <span className="over-title-lbl">LAST OVER</span>
+          <div className="ball-boxes-row">
+            {timeline.prevOverBalls.map((b, i) => (
+              <span key={i} className={`ball-box-sq ${b.label === "W" ? "wicket" : b.label === "6" ? "six" : b.label === "4" ? "four" : ""}`}>
+                {b.label}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="strip-center-separator"></div>
+
+        <div className="over-delivery-group">
+          <span className="over-title-lbl">CURRENT OVER</span>
+          <div className="ball-boxes-row">
+            {timeline.currOverBalls.map((b, i) => (
+              <span key={i} className={`ball-box-sq ${b.label === "W" ? "wicket" : b.label === "6" ? "six" : b.label === "4" ? "four" : ""}`}>
+                {b.label}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* LEVEL 4 — Player Context Strip */}
+      <div className="level-4-player-context-strip">
+        <div className="context-item left">
+          <span className="ctx-lbl">Next batsman:</span>
+          <span className="ctx-val yellow">{score?.nextBatsman || "N Dickwella"}</span>
+        </div>
+
+        <div className="context-item right">
+          <span className="ctx-lbl">Last wicket:</span>
+          <span className="ctx-val white">{score?.lastWicket || "Keshara Nuwantha"}</span>
+        </div>
+      </div>
     </div>
   );
 }

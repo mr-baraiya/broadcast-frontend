@@ -6,16 +6,20 @@ export function BroadcastTicker({ matchData }) {
 
   if (!segments || segments.length === 0) return null;
 
-  const doubleSegments = [...segments, ...segments];
+  const doubleSegments = [...segments, ...segments, ...segments];
 
   return (
-    <div className="ref-bottom-ticker-bar">
-      <div className="ticker-track">
+    <div className="dark-context-ticker-bar">
+      <div className="ticker-live-badge-fixed">
+        <span className="live-red-dot">●</span>
+        <span className="live-txt">LIVE</span>
+      </div>
+
+      <div className="ticker-track-smooth">
         {doubleSegments.map((item, idx) => (
-          <div key={`${item.id}_${idx}`} className="ref-ticker-item">
-            <span className="ref-ticker-badge">{item.badge}:</span>
-            <span className="ref-ticker-val">{item.value}</span>
-            <span className="ref-ticker-sep">-</span>
+          <div key={`${item.id}_${idx}`} className="context-ticker-item">
+            <span className="ticker-val-yellow">{item.value}</span>
+            <span className="ticker-sep-bullet">•</span>
           </div>
         ))}
       </div>

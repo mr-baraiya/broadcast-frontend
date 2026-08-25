@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { getLiveMatches, getUpcomingMatches } from "../services/api";
+import { getLiveMatches, getUpcomingMatches, getMatchFull } from "../services/api";
+import { normalizeMatchData } from "../utils/normalizeMatch";
 import { DashboardHeader } from "../components/dashboard/DashboardHeader";
 import { CommandSummaryBar } from "../components/dashboard/CommandSummaryBar";
 import { SearchFilterBar } from "../components/dashboard/SearchFilterBar";
@@ -16,39 +17,47 @@ export function Dashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("ALL");
 
-  const fetchData = () => {
+  const fetchData = async () => {
     setIsLoading(true);
     setIsError(false);
-    Promise.all([getLiveMatches(), getUpcomingMatches()])
-      .then(([liveRes, upcomingRes]) => {
-        let liveList = (liveRes && liveRes.matches) || [];
-        let upcomingList = (upcomingRes && upcomingRes.matches) || [];
+    try {
+      const [liveRes, upcomingRes] = await Promise.all([getLiveMatches(), getUpcomingMatches()]);
+      let liveList = (liveRes && liveRes.matches) || [];
+      let upcomingList = (upcomingRes && upcomingRes.matches) || [];
 
-        if (liveList.length === 0) {
-          liveList = [
-            {
+      if (liveList.length === 0) {
+        try {
+          const match163017Data = await getMatchFull("163017");
+          if (match163017Data) {
+            const normalized = normalizeMatchData(match163017Data);
+            liveList = [{
               id: "163017",
-              title: "India vs Sri Lanka, 2nd Test",
-              venue: "Sinhalese Sports Club, Colombo",
-              status: "LIVE",
-              status_text: "Day 3: Stumps — Sri Lanka trail by 238 runs",
-              teams: ["SL", "IND"],
-              score: { team: "SL", runs: 265, wickets: 8, overs: 83.4, run_rate: 3.17, partnership: "35 (92)" }
-            }
-          ];
+              title: normalized.title || "India vs Sri Lanka, 2nd Test",
+              venue: normalized.venue || "Sinhalese Sports Club, Colombo",
+              status: normalized.status || "LIVE",
+              status_text: normalized.statusText || "Day 3: Session 2",
+              teams: normalized.teams || ["SL", "IND"],
+              score: normalized.score
+            }];
+          }
+        } catch (mErr) {
+          console.warn("Match 163017 API fetch error:", mErr);
         }
+      }
 
-        setLiveMatches(liveList);
-        setUpcomingMatches(upcomingList);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch matches:", err);
-        setIsError(true);
-      })
-      .finally(() => setIsLoading(false));
+      setLiveMatches(liveList);
+      setUpcomingMatches(upcomingList);
+    } catch (err) {
+      console.error("Failed to fetch matches from API:", err);
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const filterMatch = (m) => {
     if (!searchTerm) return true;

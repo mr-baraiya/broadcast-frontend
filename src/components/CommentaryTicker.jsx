@@ -1,24 +1,17 @@
 import React from "react";
 
-export function CommentaryTicker({ latestEvent }) {
-  if (!latestEvent || !latestEvent.text) {
-    return (
-      <div className="commentary-ticker-bar">
-        <div className="ticker-label">LIVE FEED</div>
-        <div className="ticker-text" style={{ color: "#94a3b8" }}>
-          Waiting for live commentary delivery...
-        </div>
-      </div>
-    );
-  }
+export function CommentaryTicker({ matchData, latestEvent }) {
+  const lastBall = matchData?.lastBall || null;
 
-  const label = latestEvent.event ? `LAST BALL: ${latestEvent.event}` : "LAST BALL";
+  const label = lastBall?.label || (latestEvent?.event ? `LAST BALL: ${latestEvent.event}` : "LAST BALL");
+  const text = lastBall?.text || latestEvent?.text || latestEvent?.commentary || "Waiting for live commentary delivery...";
+  const badgeType = lastBall?.badge || "DOT";
 
   return (
     <div className="commentary-ticker-bar">
-      <div className="ticker-label">{label}</div>
-      <div className="ticker-text animate-commentary" key={latestEvent.event_id || latestEvent.text}>
-        {latestEvent.text}
+      <div className={`ticker-label badge-${badgeType.toLowerCase()}`}>{label}</div>
+      <div className="ticker-text animate-commentary" key={text}>
+        {text}
       </div>
     </div>
   );
