@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { getApiBaseUrl } from "../../utils/config";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:6020";
 const DEFAULT_STADIUM_URL = "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=1920&auto=format&fit=crop";
 
 export function VenueBackground({ matchData }) {
@@ -13,7 +13,7 @@ export function VenueBackground({ matchData }) {
 
   useEffect(() => {
     let isMounted = true;
-    axios.get(`${API_BASE_URL}/stadium/background`)
+    axios.get(`${getApiBaseUrl()}/stadium/background`)
       .then((res) => {
         if (isMounted && res.data && res.data.stadium) {
           setStadium(res.data.stadium);

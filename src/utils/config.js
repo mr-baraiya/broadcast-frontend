@@ -4,8 +4,13 @@
  */
 
 export function getApiBaseUrl() {
-  if (import.meta.env.VITE_API_BASE_URL) {
-    return import.meta.env.VITE_API_BASE_URL;
+  let url = import.meta.env.VITE_API_BASE_URL;
+  if (url && url.trim()) {
+    url = url.trim().replace(/\/+$/, "");
+    if (!/^https?:\/\//i.test(url)) {
+      url = `https://${url}`;
+    }
+    return url;
   }
   
   if (typeof window !== "undefined") {
@@ -21,8 +26,19 @@ export function getApiBaseUrl() {
 }
 
 export function getWsBaseUrl() {
-  if (import.meta.env.VITE_WS_BASE_URL) {
-    return import.meta.env.VITE_WS_BASE_URL;
+  let url = import.meta.env.VITE_WS_BASE_URL;
+  if (url && url.trim()) {
+    url = url.trim().replace(/\/+$/, "");
+    if (!/^wss?:\/\//i.test(url)) {
+      if (url.startsWith("http://")) {
+        url = url.replace(/^http:\/\//i, "ws://");
+      } else if (url.startsWith("https://")) {
+        url = url.replace(/^https:\/\//i, "wss://");
+      } else {
+        url = `wss://${url}`;
+      }
+    }
+    return url;
   }
 
   if (typeof window !== "undefined") {

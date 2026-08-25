@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Upload, Loader2 } from "lucide-react";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:6020";
+import { getApiBaseUrl } from "../../utils/config";
 
 export function StadiumUploader({ onStadiumUpdate }) {
   const [stadiumData, setStadiumData] = useState({
@@ -20,7 +19,7 @@ export function StadiumUploader({ onStadiumUpdate }) {
 
   const fetchStadiumBackground = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/stadium/background`);
+      const res = await axios.get(`${getApiBaseUrl()}/stadium/background`);
       if (res.data && res.data.stadium) {
         setStadiumData(res.data.stadium);
       }
@@ -42,7 +41,7 @@ export function StadiumUploader({ onStadiumUpdate }) {
     formData.append("blur", stadiumData.blur);
 
     try {
-      const res = await axios.post(`${API_BASE_URL}/stadium/upload`, formData, {
+      const res = await axios.post(`${getApiBaseUrl()}/stadium/upload`, formData, {
         headers: { "Content-Type": "multipart/form-data" }
       });
 

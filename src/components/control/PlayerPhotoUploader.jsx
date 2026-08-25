@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Upload, Check, Image as ImageIcon, Loader2 } from "lucide-react";
 import { getPlayerPortrait } from "../../utils/teamLogos";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:6020";
+import { getApiBaseUrl } from "../../utils/config";
 
 export function PlayerPhotoUploader({ matchData, onRefresh }) {
   const [uploadingState, setUploadingState] = useState({});
@@ -30,7 +29,7 @@ export function PlayerPhotoUploader({ matchData, onRefresh }) {
     formData.append("file", file);
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/player/upload`, formData, {
+      const response = await axios.post(`${getApiBaseUrl()}/player/upload`, formData, {
         headers: { "Content-Type": "multipart/form-data" }
       });
 
