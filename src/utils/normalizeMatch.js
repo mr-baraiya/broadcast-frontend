@@ -127,6 +127,34 @@ export function normalizeMatchData(rawPayload) {
   const overPrevTotal = overPrevBalls.reduce((acc, b) => acc + (typeof b.runs === "number" ? b.runs : 0), 0);
   const overCurrTotal = overCurrBalls.reduce((acc, b) => acc + (typeof b.runs === "number" ? b.runs : 0), 0);
 
+  // Extract Trail/Lead from status_text if missing
+  let derivedTrailBy = data.trail_by || null;
+  if (!derivedTrailBy && match.status_text) {
+    const trailMatch = match.status_text.match(/(?:[A-Za-z\s]+)?(trail by \d+ runs|lead by \d+ runs|won by [^•]+)/i);
+    if (trailMatch) {
+      derivedTrailBy = trailMatch[1] || trailMatch[0];
+    } else {
+      derivedTrailBy = match.status_text;
+    }
+  }
+
+  // Extract Session Info from status_text if missing
+  let derivedSession = data.session_info ? data.session_info.session : null;
+  if (!derivedSession && match.status_text) {
+    const sessMatch = match.status_text.match(/(Day \d+(?:\s*:\s*\d+\w+\s*Session)?|Day \d+\s+Session\s+\d+)/i);
+    if (sessMatch) {
+      derivedSession = sessMatch[1];
+    }
+  }
+
+  // Derive Partnership if missing
+  let derivedPartnership = data.partnership || null;
+  if (!derivedPartnership && striker && nonStriker) {
+    const pRuns = (striker.runs || 0) + (nonStriker.runs || 0);
+    const pBalls = (striker.balls || 0) + (nonStriker.balls || 0);
+    derivedPartnership = `${pRuns} (${pBalls})`;
+  }
+
   // Innings State (1st INNINGS / 2nd INNINGS)
   const rawInningNum = data.inning_number || (data.innings && data.innings.number) || 1;
   const inningLabel = rawInningNum === 1 ? "1st INNINGS" : `${rawInningNum}nd INNINGS`;
@@ -137,8 +165,8 @@ export function normalizeMatchData(rawPayload) {
     teams: {
       batting: battingTeam,
       bowling: bowlingTeam,
-      teamA: teams[0],
-      teamB: teams[1]
+      teamA: battingTeam,
+      teamB: bowlingTeam
     },
     status: match.status || "LIVE",
     statusText: match.status_text || match.status || "",
@@ -153,8 +181,8 @@ export function normalizeMatchData(rawPayload) {
       crr: score.run_rate ?? data.crr ?? null,
       rrr: data.rrr ?? null,
       target: data.target ?? null,
-      trailBy: data.trail_by || null,
-      partnership: data.partnership || null,
+      trailBy: derivedTrailBy,
+      partnership: derivedPartnership,
       lastWicket: data.last_wicket || null,
       nextBatsman: data.next_batsman || null,
       toss: data.toss || null,
@@ -170,7 +198,7 @@ export function normalizeMatchData(rawPayload) {
     },
 
     winProbability: data.win_probability || null,
-    sessionInfo: data.session_info || null,
+    sessionInfo: { session: derivedSession },
 
     players: {
       striker: striker,

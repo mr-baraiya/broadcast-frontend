@@ -3,12 +3,14 @@ import { Link } from "react-router-dom";
 import { formatRunsWickets, formatOvers, formatRunRate } from "../../utils/formatScore";
 import { getTeamInitials } from "../../utils/teamLogos";
 
+import { resolveVenue } from "../../utils/venueResolver";
+
 export function LiveMatchCard({ match }) {
   if (!match) return null;
 
   const matchId = match.id || "163017";
   const title = match.title || "Cricket Match";
-  const venue = match.venue || "Stadium";
+  const venue = resolveVenue(match);
   const statusText = match.status_text || match.status || "LIVE";
 
   const teams = Array.isArray(match.teams) ? match.teams : ["TEAM A", "TEAM B"];

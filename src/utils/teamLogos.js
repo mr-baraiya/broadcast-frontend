@@ -173,7 +173,7 @@ export function resolvePlayerFromRegistry(name, roleKey) {
 }
 
 export function getPlayerPortrait(player, roleKey) {
-  if (!player && !roleKey) return "https://api.dicebear.com/7.x/avataaars/svg?seed=Player";
+  if (!player && !roleKey) return "/default-player.svg";
 
   const name = typeof player === "object" ? (player?.name || "") : String(player || "");
 
@@ -198,8 +198,7 @@ export function getPlayerPortrait(player, roleKey) {
     }
   }
 
-  // 4. Default Dicebear Avatar
-  const cleanParts = name ? name.toLowerCase().replace(/[^a-z0-9\s]/g, "").trim().split(/\s+/) : [roleKey || "player"];
-  const cleanKey = cleanParts.join("_") || "player";
-  return `https://api.dicebear.com/7.x/avataaars/svg?seed=${cleanKey}`;
+  // 4. Clean Template Person Image Fallback (No cartoon emojis)
+  return "/default-player.svg";
 }
+

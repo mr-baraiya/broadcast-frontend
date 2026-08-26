@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 360" width="300" height="360">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="silGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#94a3b8"/>
+      <stop offset="100%" stop-color="#64748b"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Card -->
+  <rect width="300" height="360" rx="12" fill="url(#bgGrad)"/>
+  
+  <!-- Sleek Professional Sports Player Silhouette -->
+  <!-- Head -->
+  <circle cx="150" cy="115" r="48" fill="url(#silGrad)"/>
+  
+  <!-- Neck & Shoulders -->
+  <path d="M 75 300 C 75 225, 105 190, 150 190 C 195 190, 225 225, 225 300 Z" fill="url(#silGrad)"/>
+
+  <!-- Subtle Rim Highlight -->
+  <circle cx="150" cy="115" r="48" fill="none" stroke="#cbd5e1" stroke-width="2" opacity="0.3"/>
+  <path d="M 75 300 C 75 225, 105 190, 150 190 C 195 190, 225 225, 225 300 Z" fill="none" stroke="#cbd5e1" stroke-width="2" opacity="0.3"/>
+</svg>

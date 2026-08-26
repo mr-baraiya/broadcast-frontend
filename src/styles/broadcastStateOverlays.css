@@ -1,0 +1,401 @@
+/* Broadcast State Overlays (Pre-Match & Match Break Screens) */
+
+/* General Stage Wrapper */
+.state-overlay-container {
+  width: 100%;
+  min-height: calc(100vh - 180px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  box-sizing: border-box;
+  animation: overlayFadeIn 0.5s ease-out forwards;
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* =========================================================
+   PRE-MATCH / MATCH NOT STARTED OVERLAY STYLES
+   ========================================================= */
+
+.pre-match-card-stage {
+  width: 100%;
+  max-width: 1280px;
+  background: rgba(11, 19, 36, 0.88);
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  padding: 2.2rem 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.pre-match-card-stage::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #facc15, #38bdf8, #facc15);
+  background-size: 200% 100%;
+  animation: gradientShift 4s linear infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Pre-Match Header Badge */
+.pre-match-top-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(250, 204, 21, 0.12);
+  border: 1px solid rgba(250, 204, 21, 0.5);
+  color: #facc15;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 0.5rem 1.4rem;
+  border-radius: 50px;
+  box-shadow: 0 4px 15px rgba(250, 204, 21, 0.15);
+  margin-bottom: 1.5rem;
+}
+
+.state-pulse-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #facc15;
+  box-shadow: 0 0 10px #facc15;
+  animation: pulseDot 1.5s infinite;
+}
+
+@keyframes pulseDot {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 16px #facc15; }
+  100% { transform: scale(0.9); opacity: 0.7; }
+}
+
+/* Teams VS Hero Row */
+.pre-match-teams-vs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4rem;
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+.team-hero-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  flex: 1;
+}
+
+.team-hero-logo {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.6));
+  transition: transform 0.3s ease;
+}
+
+.team-hero-logo:hover {
+  transform: scale(1.05);
+}
+
+.team-hero-name {
+  color: #ffffff;
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
+  text-align: center;
+}
+
+.vs-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  border: 2px solid rgba(250, 204, 21, 0.6);
+  color: #facc15;
+  font-size: 1.4rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 25px rgba(250, 204, 21, 0.25);
+  flex-shrink: 0;
+}
+
+/* Match Details Bar */
+.pre-match-details-grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1rem 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.pre-detail-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.pre-detail-lbl {
+  color: #94a3b8;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.pre-detail-val {
+  color: #f8fafc;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.pre-detail-val.gold {
+  color: #facc15;
+}
+
+.pre-detail-divider {
+  width: 1px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Pre-Match Status Description Box */
+.pre-match-status-box {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #38bdf8;
+  padding: 0.75rem 1.8rem;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   MATCH BREAK OVERLAY STYLES
+   ========================================================= */
+
+.break-overlay-stage {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  align-self: center;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 20px;
+  backdrop-filter: blur(24px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  padding: 2.2rem 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.break-overlay-stage.rain-delay {
+  border-color: rgba(56, 189, 248, 0.6);
+  background: rgba(12, 24, 44, 0.94);
+}
+
+.break-overlay-stage.rain-delay::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #38bdf8, #60a5fa, #38bdf8);
+}
+
+.break-overlay-stage.innings-break::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #facc15, #f97316, #facc15);
+}
+
+/* Break Top Badge */
+.break-header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 0.55rem 1.6rem;
+  border-radius: 50px;
+  margin-bottom: 1.5rem;
+}
+
+.break-header-badge.rain-delay {
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  color: #38bdf8;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+}
+
+.break-header-badge.innings-break {
+  background: rgba(250, 204, 21, 0.15);
+  border: 1px solid rgba(250, 204, 21, 0.5);
+  color: #facc15;
+  box-shadow: 0 0 20px rgba(250, 204, 21, 0.2);
+}
+
+.break-header-badge.general {
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.5);
+  color: #c084fc;
+}
+
+.break-pulse-blue {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 10px #38bdf8;
+  animation: pulseBlue 1.5s infinite;
+}
+
+@keyframes pulseBlue {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 16px #38bdf8; }
+  100% { transform: scale(0.9); opacity: 0.7; }
+}
+
+/* Break Main Grid (Score & Equation) */
+.break-main-grid {
+  display: flex;
+  align-items: stretch;
+  gap: 2rem;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.break-score-card {
+  flex: 1;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.break-score-lbl {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.break-score-val {
+  color: #facc15;
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.break-overs-val {
+  color: #cbd5e1;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.break-equation-card {
+  flex: 1.2;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+  border: 1px solid rgba(250, 204, 21, 0.3);
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.break-eq-title {
+  color: #38bdf8;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.break-eq-target {
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.break-eq-rrr {
+  color: #facc15;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+/* Break Status Text Box */
+.break-status-text-banner {
+  width: 100%;
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 0.9rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  color: #f1f5f9;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+}

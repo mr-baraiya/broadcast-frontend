@@ -1,7 +1,8 @@
 import React from "react";
 import { TeamScore } from "./TeamScore";
+import { MATCH_STATE_TYPES } from "../utils/matchState";
 
-export function Scoreboard({ matchData, animScore }) {
+export function Scoreboard({ matchData, animScore, stateInfo }) {
   if (!matchData) return null;
 
   const { teams, score } = matchData;
@@ -22,7 +23,15 @@ export function Scoreboard({ matchData, animScore }) {
   }
 
   const rawInningNum = score?.inningNumber || 1;
-  const inningBadgeText = rawInningNum === 1 ? "1ST" : `${rawInningNum}ND`;
+
+  let inningBadgeText = rawInningNum === 1 ? "1ST" : `${rawInningNum}ND`;
+  if (stateInfo?.type === MATCH_STATE_TYPES.NOT_STARTED) {
+    inningBadgeText = "PRE";
+  } else if (stateInfo?.type === MATCH_STATE_TYPES.BREAK) {
+    inningBadgeText = "BREAK";
+  } else if (stateInfo?.type === MATCH_STATE_TYPES.COMPLETED) {
+    inningBadgeText = "END";
+  }
 
   return (
     <div className="ref-top-scoreboard-container">
@@ -37,7 +46,9 @@ export function Scoreboard({ matchData, animScore }) {
       />
 
       <div className="ref-center-oval-badge">
-        <div className="giant-inning-digit">{inningBadgeText}</div>
+        <div className="giant-inning-digit" style={{ fontSize: inningBadgeText.length > 3 ? "0.95rem" : "1.4rem" }}>
+          {inningBadgeText}
+        </div>
       </div>
 
       <TeamScore
@@ -52,3 +63,4 @@ export function Scoreboard({ matchData, animScore }) {
     </div>
   );
 }
+

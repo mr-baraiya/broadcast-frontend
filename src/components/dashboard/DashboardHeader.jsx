@@ -5,8 +5,11 @@ export function DashboardHeader({ liveCount = 0, upcomingCount = 0, connectionSt
 
   return (
     <header className="dash-console-header">
-      <div className="console-brand-group">
+      <div className="console-brand-group" style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
+        <img src="/logo.png" alt="Cricket Broadcast System" style={{ height: "38px", width: "auto", objectFit: "contain" }} />
         <div className="console-brand-text">
+
+
           <span className="brand-title">Cricket Production System</span>
           <span className="brand-subtitle">OBS Broadcast Command</span>
         </div>
@@ -37,3 +40,4 @@ export function DashboardHeader({ liveCount = 0, upcomingCount = 0, connectionSt
     </header>
   );
 }
+

@@ -731,3 +731,172 @@
 
 .error-icon { color: #e07070; flex-shrink: 0; }
 .error-text { flex-grow: 1; }
+
+/* ═══════════════════════════════════════════════════════════════
+   TABLE FORMAT STYLES FOR DASHBOARD
+═══════════════════════════════════════════════════════════════ */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.broadcast-match-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+}
+
+.broadcast-match-table thead {
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--border);
+}
+
+.broadcast-match-table th {
+  padding: 0.85rem 1.2rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.broadcast-match-table td {
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.broadcast-match-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.broadcast-match-table tbody tr.table-row {
+  transition: background-color 0.15s ease;
+}
+
+.broadcast-match-table tbody tr.table-row:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.status-pill.live {
+  background: rgba(240, 165, 0, 0.12);
+  border: 1px solid rgba(240, 165, 0, 0.35);
+  color: #facc15;
+}
+
+.status-pill.upcoming {
+  background: rgba(148, 163, 184, 0.1);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  color: #cbd5e1;
+}
+
+.status-pill.completed {
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  color: #4ade80;
+}
+
+.status-pill.break {
+  background: rgba(168, 85, 247, 0.12);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  color: #c084fc;
+}
+
+.cell-title .match-title-text {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.cell-score .score-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.cell-score .score-bold {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #facc15;
+}
+
+.cell-score .overs-muted {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.cell-score .score-pending {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.cell-situation .situation-text {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.cell-venue .venue-text {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.cell-actions .actions-flex {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.btn-table-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.btn-table-action.live {
+  background: #facc15;
+  color: #000000;
+}
+
+.btn-table-action.live:hover {
+  background: #eab308;
+}
+
+.btn-table-action.control {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+}
+
+.btn-table-action.control:hover {
+  background: var(--bg-hover);
+  border-color: #444;
+}

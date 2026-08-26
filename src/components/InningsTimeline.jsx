@@ -4,25 +4,29 @@ export function InningsTimeline({ matchData }) {
   if (!matchData) return null;
 
   const { score, teams } = matchData;
-  const teamA = teams?.teamA || "SL";
+  const teamName = score?.team || teams?.batting || teams?.teamA || "TEAM";
 
-  const totalRuns = score?.runs || 265;
-  const totalWickets = score?.wickets || 8;
-  const overs = score?.overs || 83.4;
+  const totalRuns = score?.runs ?? 0;
+  const totalWickets = score?.wickets ?? 0;
+  const overs = score?.overs ?? 0;
+  const inningLabel = score?.inningLabel || "INNINGS";
 
-  const wicketsData = [
-    { num: "W1", score: 42, player: "Karunaratne 18" },
-    { num: "W2", score: 98, player: "Mendis 34" },
-    { num: "W3", score: 145, player: "Mathews 28" },
-    { num: "W4", score: 182, player: "de Silva 45" },
-    { num: "W5", score: 230, player: "Nuwantha 8" }
-  ];
+  const wicketsData = [];
+  if (score?.lastWicket) {
+    wicketsData.push({
+      num: `W${totalWickets || 1}`,
+      score: Math.max(0, totalRuns - 5),
+      player: score.lastWicket
+    });
+  }
 
   return (
     <div className="innings-timeline-container">
       <div className="timeline-header-row">
-        <span className="timeline-title-text">{teamA} • 1st INNINGS TIMELINE</span>
-        <span className="timeline-curr-partnership-text">PARTNERSHIP: <strong className="val-gold">{score?.partnership || "35 (92)"}</strong></span>
+        <span className="timeline-title-text">{teamName} • {inningLabel} TIMELINE</span>
+        {score?.partnership && (
+          <span className="timeline-curr-partnership-text">PARTNERSHIP: <strong className="val-gold">{score.partnership}</strong></span>
+        )}
       </div>
 
       <div className="timeline-graphic-track">
@@ -38,7 +42,8 @@ export function InningsTimeline({ matchData }) {
 
         {/* Wicket Points */}
         {wicketsData.map((w, idx) => {
-          const pct = Math.min(Math.max((w.score / totalRuns) * 82, 10), 82);
+          const denominator = totalRuns > 0 ? totalRuns : 1;
+          const pct = Math.min(Math.max((w.score / denominator) * 82, 10), 82);
           return (
             <div key={idx} className="timeline-point wicket" style={{ left: `${pct}%` }}>
               <span className="point-score-num prominent">{w.score}</span>

@@ -14,15 +14,12 @@ export function getApiBaseUrl() {
   }
   
   if (typeof window !== "undefined") {
-    const hostname = window.location.hostname;
-    if (hostname === "localhost" || hostname === "127.0.0.1") {
-      return "http://127.0.0.1:6020";
-    }
+    const hostname = window.location.hostname || "localhost";
     const protocol = window.location.protocol === "https:" ? "https:" : "http:";
-    return `${protocol}//${window.location.host}`;
+    return `${protocol}//${hostname}:6020`;
   }
 
-  return "http://127.0.0.1:6020";
+  return "http://localhost:6020";
 }
 
 export function getWsBaseUrl() {
@@ -42,13 +39,10 @@ export function getWsBaseUrl() {
   }
 
   if (typeof window !== "undefined") {
-    const hostname = window.location.hostname;
-    if (hostname === "localhost" || hostname === "127.0.0.1") {
-      return "ws://127.0.0.1:6020";
-    }
+    const hostname = window.location.hostname || "localhost";
     const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    return `${wsProtocol}//${window.location.host}`;
+    return `${wsProtocol}//${hostname}:6020`;
   }
 
-  return "ws://127.0.0.1:6020";
+  return "ws://localhost:6020";
 }

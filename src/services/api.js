@@ -3,11 +3,12 @@ import { getApiBaseUrl } from "../utils/config";
 
 export const apiClient = axios.create({
   baseURL: getApiBaseUrl(),
-  timeout: 8000,
+  timeout: 20000,
   headers: {
     "Accept": "application/json"
   }
 });
+
 
 export const getMatchFull = async (matchId) => {
   try {
@@ -36,6 +37,16 @@ export const getUpcomingMatches = async () => {
     return res.data;
   } catch (err) {
     console.warn("[API] Failed to fetch upcoming matches list:", err.message);
+    return { status: "success", matches: [] };
+  }
+};
+
+export const getRecentMatches = async () => {
+  try {
+    const res = await apiClient.get("/matches/recent");
+    return res.data;
+  } catch (err) {
+    console.warn("[API] Failed to fetch recent matches list:", err.message);
     return { status: "success", matches: [] };
   }
 };

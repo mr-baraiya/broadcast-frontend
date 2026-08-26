@@ -3,8 +3,11 @@ import { useParams } from "react-router-dom";
 import { useMatch } from "../hooks/useMatch";
 import { useBroadcastControl } from "../hooks/useBroadcastControl";
 import { ControlHeader } from "../components/control/ControlHeader";
+import { MissingMediaAlert } from "../components/control/MissingMediaAlert";
 import { LiveMatchSummary } from "../components/control/LiveMatchSummary";
+
 import { DisplayControls } from "../components/control/DisplayControls";
+import { MatchStateControl } from "../components/control/MatchStateControl";
 import { LayoutSelector } from "../components/control/LayoutSelector";
 import { MediaUploader } from "../components/control/MediaUploader";
 import { StadiumUploader } from "../components/control/StadiumUploader";
@@ -41,7 +44,7 @@ export function ControlPanel() {
 
   const handleToggle = (key, value) => {
     updateToggle(key, value);
-    addLog(`Toggle '${key}' set to ${value ? "ON" : "OFF"}`, "control");
+    addLog(`Control '${key}' set to ${value}`, "control");
     setToastMessage("Broadcast updated (Sent to OBS)");
     setTimeout(() => setToastMessage(""), 2500);
   };
@@ -70,11 +73,16 @@ export function ControlPanel() {
       <ControlHeader matchTitle={matchTitle} matchId={targetId} connectionStatus={connectionStatus} />
 
       <main className="control-main-container">
+        {/* Top Alert Banner for Missing Media Assets */}
+        <MissingMediaAlert matchData={matchData} />
+
         {/* Read-Only Operator Live Match Context Summary */}
         <LiveMatchSummary matchData={matchData} />
 
+
         <div className="control-grid-layout">
           <div className="control-left-column">
+            <MatchStateControl controlState={controlState} onStateChange={handleToggle} />
             <DisplayControls controlState={controlState} onToggleChange={handleToggle} />
             <LayoutSelector currentLayout={controlState.layout} onLayoutChange={handleLayout} />
             <StadiumUploader onStadiumUpdate={handleStadiumUpdate} />
@@ -94,3 +102,4 @@ export function ControlPanel() {
     </div>
   );
 }
+

@@ -124,8 +124,11 @@ function DropZone({ id, label, sublabel, previewUrl, isCustom, isUploading, uplo
           ) : isCustom ? (
             <span className="dz-chip blob">● Custom Image</span>
           ) : (
-            <span className="dz-chip default">○ Default</span>
+            <span className="dz-chip default" style={{ background: "rgba(245, 158, 11, 0.2)", color: "#f59e0b", border: "1px solid rgba(245, 158, 11, 0.4)", fontWeight: "700" }}>
+              ⚠️ Photo Missing
+            </span>
           )}
+
 
           <span className="dz-action-hint">
             {isDragging ? "Drop to upload" : isUploading ? "Please wait…" : "Click or drag to change"}
@@ -231,7 +234,8 @@ export function MediaUploader({ matchData, onRefresh }) {
   };
 
   return (
-    <div className="media-uploader-root">
+    <div id="media-uploader-section" className="media-uploader-root">
+
       {/* Status Banner */}
       {globalStatus && (
         <div className={`mu-status-banner ${globalStatus.type}`}>

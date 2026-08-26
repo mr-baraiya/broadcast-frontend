@@ -4,8 +4,6 @@ export function buildBroadcastTickerSegments(matchData) {
   const { score, statusText, venue, players, sessionInfo, teams } = matchData;
   const segments = [];
 
-  const teamA = teams?.teamA || "SL";
-
   // 1. Trail / Lead Status
   if (score && score.trailBy) {
     segments.push({
@@ -13,21 +11,22 @@ export function buildBroadcastTickerSegments(matchData) {
       label: "SITUATION",
       value: score.trailBy
     });
-  } else {
+  } else if (statusText) {
     segments.push({
       id: "trail_info",
       label: "SITUATION",
-      value: `${teamA} trail by 238 runs`
+      value: statusText
     });
   }
 
   // 2. Day & Session
-  const sessionStr = sessionInfo?.session || "Day 3 — Session 2";
-  segments.push({
-    id: "session_info",
-    label: "SESSION",
-    value: sessionStr
-  });
+  if (sessionInfo && sessionInfo.session) {
+    segments.push({
+      id: "session_info",
+      label: "SESSION",
+      value: sessionInfo.session
+    });
+  }
 
   // 3. Partnership
   if (score && score.partnership) {
@@ -64,12 +63,6 @@ export function buildBroadcastTickerSegments(matchData) {
       id: "venue_info",
       label: "VENUE",
       value: `Venue: ${venue}`
-    });
-  } else {
-    segments.push({
-      id: "venue_info",
-      label: "VENUE",
-      value: "Venue: Sinhalese Sports Club, Colombo"
     });
   }
 

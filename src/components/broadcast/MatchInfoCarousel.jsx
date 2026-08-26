@@ -6,72 +6,75 @@ import { formatStrikeRate } from "../../utils/formatScore";
 export function MatchInfoCarousel({ matchData }) {
   const [slideIndex, setSlideIndex] = useState(0);
 
-  if (!matchData) return null;
-
-  const { statusText, venue, score, players } = matchData;
+  const statusText = matchData?.statusText;
+  const venue = matchData?.venue;
+  const score = matchData?.score;
+  const players = matchData?.players;
 
   const slides = [];
 
-  // Slide 1: Match Situation
-  if (statusText) {
-    slides.push({
-      id: "sit",
-      icon: Shield,
-      title: "MATCH SITUATION",
-      content: statusText
-    });
-  }
+  if (matchData) {
+    // Slide 1: Match Situation
+    if (statusText) {
+      slides.push({
+        id: "sit",
+        icon: Shield,
+        title: "MATCH SITUATION",
+        content: statusText
+      });
+    }
 
-  // Slide 2: Partnership
-  if (score && score.partnership) {
-    slides.push({
-      id: "part",
-      icon: Users,
-      title: "CURRENT PARTNERSHIP",
-      content: `${score.partnership} RUNS`
-    });
-  }
+    // Slide 2: Partnership
+    if (score && score.partnership) {
+      slides.push({
+        id: "part",
+        icon: Users,
+        title: "CURRENT PARTNERSHIP",
+        content: `${score.partnership} RUNS`
+      });
+    }
 
-  // Slide 3: CRR & Target
-  if (score && score.crr) {
-    slides.push({
-      id: "crr",
-      icon: Activity,
-      title: "RUN RATE",
-      content: `CURRENT RUN RATE: ${score.crr}${score.target ? ` • TARGET: ${score.target}` : ""}`
-    });
-  }
+    // Slide 3: CRR & Target
+    if (score && score.crr) {
+      slides.push({
+        id: "crr",
+        icon: Activity,
+        title: "RUN RATE",
+        content: `CURRENT RUN RATE: ${score.crr}${score.target ? ` • TARGET: ${score.target}` : ""}`
+      });
+    }
 
-  // Slide 4: Striker Stats
-  if (players && players.striker) {
-    const s = players.striker;
-    slides.push({
-      id: "striker",
-      icon: Target,
-      title: "BATSMAN ON STRIKE",
-      content: `${s.name} ${s.runs} (${s.balls}b) • 4s: ${s.fours} 6s: ${s.sixes} • SR: ${formatStrikeRate(s.strike_rate)}`
-    });
-  }
+    // Slide 4: Striker Stats
+    if (players && players.striker) {
+      const s = players.striker;
+      slides.push({
+        id: "striker",
+        icon: Target,
+        title: "BATSMAN ON STRIKE",
+        content: `${s.name} ${s.runs} (${s.balls}b) • 4s: ${s.fours} 6s: ${s.sixes} • SR: ${formatStrikeRate(s.strike_rate)}`
+      });
+    }
 
-  // Slide 5: Bowler Stats
-  if (players && players.bowler) {
-    const b = players.bowler;
-    slides.push({
-      id: "bowler",
-      icon: Shield,
-      title: "CURRENT BOWLER",
-      content: `${b.name} ${b.wickets}-${b.runs} (${b.overs} ov) • Maidens: ${b.maidens} • Econ: ${b.economy?.toFixed(2) || "—"}`
-    });
-  }
+    // Slide 5: Bowler Stats
+    if (players && players.bowler) {
+      const b = players.bowler;
+      slides.push({
+        id: "bowler",
+        icon: Shield,
+        title: "CURRENT BOWLER",
+        content: `${b.name} ${b.wickets}-${b.runs} (${b.overs} ov) • Maidens: ${b.maidens} • Econ: ${b.economy?.toFixed(2) || "—"}`
+      });
+    }
 
-  // Slide 6: Venue
-  if (venue) {
-    slides.push({
-      id: "venue",
-      icon: MapPin,
-      title: "MATCH VENUE",
-      content: venue
-    });
+    // Slide 6: Venue
+    if (venue) {
+      slides.push({
+        id: "venue",
+        icon: MapPin,
+        title: "MATCH VENUE",
+        content: venue
+      });
+    }
   }
 
   // Rotate every 10 seconds predictably
@@ -85,7 +88,7 @@ export function MatchInfoCarousel({ matchData }) {
     return () => clearInterval(timer);
   }, [slides.length]);
 
-  if (slides.length === 0) return null;
+  if (!matchData || slides.length === 0) return null;
 
   const currentSlide = slides[slideIndex % slides.length];
   const IconComp = currentSlide.icon;
@@ -111,3 +114,4 @@ export function MatchInfoCarousel({ matchData }) {
     </div>
   );
 }
+

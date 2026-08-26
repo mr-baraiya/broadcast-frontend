@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { getLiveMatches, getUpcomingMatches, getMatchFull } from "../services/api";
+import { getLiveMatches, getRecentMatches, getUpcomingMatches, getMatchFull } from "../services/api";
 import { normalizeMatchData } from "../utils/normalizeMatch";
 import { DashboardHeader } from "../components/dashboard/DashboardHeader";
 import { CommandSummaryBar } from "../components/dashboard/CommandSummaryBar";
 import { SearchFilterBar } from "../components/dashboard/SearchFilterBar";
+import { MatchTable } from "../components/dashboard/MatchTable";
 import { LiveMatchCard } from "../components/dashboard/LiveMatchCard";
 import { UpcomingMatchCard } from "../components/dashboard/UpcomingMatchCard";
 import { SkeletonMatchCard } from "../components/dashboard/SkeletonMatchCard";
@@ -11,18 +12,25 @@ import "../styles/dashboard.css";
 
 export function Dashboard() {
   const [liveMatches, setLiveMatches] = useState([]);
+  const [recentMatches, setRecentMatches] = useState([]);
   const [upcomingMatches, setUpcomingMatches] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("ALL");
+  const [viewMode, setViewMode] = useState("TABLE");
 
   const fetchData = async () => {
     setIsLoading(true);
     setIsError(false);
     try {
-      const [liveRes, upcomingRes] = await Promise.all([getLiveMatches(), getUpcomingMatches()]);
+      const [liveRes, recentRes, upcomingRes] = await Promise.all([
+        getLiveMatches(),
+        getRecentMatches(),
+        getUpcomingMatches()
+      ]);
       let liveList = (liveRes && liveRes.matches) || [];
+      let recentList = (recentRes && recentRes.matches) || [];
       let upcomingList = (upcomingRes && upcomingRes.matches) || [];
 
       if (liveList.length === 0) {
@@ -35,7 +43,7 @@ export function Dashboard() {
               title: normalized.title || "India vs Sri Lanka, 2nd Test",
               venue: normalized.venue || "Sinhalese Sports Club, Colombo",
               status: normalized.status || "LIVE",
-              status_text: normalized.statusText || "Day 3: Session 2",
+              status_text: normalized.statusText || "Day 4: Lunch Break",
               teams: normalized.teams || ["SL", "IND"],
               score: normalized.score
             }];
@@ -46,6 +54,7 @@ export function Dashboard() {
       }
 
       setLiveMatches(liveList);
+      setRecentMatches(recentList);
       setUpcomingMatches(upcomingList);
     } catch (err) {
       console.error("Failed to fetch matches from API:", err);
@@ -77,9 +86,11 @@ export function Dashboard() {
   };
 
   const filteredLive = liveMatches.filter(filterMatch);
+  const filteredRecent = recentMatches.filter(filterMatch);
   const filteredUpcoming = upcomingMatches.filter(hasRealTeams).filter(filterMatch);
 
   const showLiveSection = activeFilter === "ALL" || activeFilter === "LIVE";
+  const showRecentSection = activeFilter === "ALL" || activeFilter === "RECENT";
   const showUpcomingSection = activeFilter === "ALL" || activeFilter === "UPCOMING";
 
   return (
@@ -104,6 +115,8 @@ export function Dashboard() {
           onSearchChange={setSearchTerm}
           activeFilter={activeFilter}
           onFilterChange={setActiveFilter}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
         />
 
         {isError && (
@@ -128,6 +141,8 @@ export function Dashboard() {
               <div className="cards-3col-grid">
                 <SkeletonMatchCard /><SkeletonMatchCard /><SkeletonMatchCard />
               </div>
+            ) : viewMode === "TABLE" ? (
+              <MatchTable matches={filteredLive} isLive={true} />
             ) : filteredLive.length > 0 ? (
               <div className="cards-3col-grid">
                 {filteredLive.map((match) => (
@@ -138,6 +153,38 @@ export function Dashboard() {
               <div className="broadcast-empty-card">
                 <h3>No live matches found</h3>
                 <p>There are no active streams matching your query.</p>
+              </div>
+            )}
+          </section>
+        )}
+
+        {showRecentSection && (filteredRecent.length > 0 || activeFilter === "RECENT") && (
+          <section className="console-section" style={{ marginTop: "1.5rem" }}>
+            <div className="section-title-bar">
+              <div className="title-left-group">
+                <h2>Recent Results</h2>
+              </div>
+              <span className="match-counter green" style={{ background: "rgba(34, 197, 94, 0.1)", color: "#4ade80", borderColor: "rgba(34, 197, 94, 0.3)" }}>
+                {filteredRecent.length} Concluded
+              </span>
+            </div>
+
+            {isLoading ? (
+              <div className="cards-3col-grid">
+                <SkeletonMatchCard /><SkeletonMatchCard />
+              </div>
+            ) : viewMode === "TABLE" ? (
+              <MatchTable matches={filteredRecent} isLive={false} />
+            ) : filteredRecent.length > 0 ? (
+              <div className="cards-3col-grid">
+                {filteredRecent.map((match) => (
+                  <LiveMatchCard key={match.id} match={match} />
+                ))}
+              </div>
+            ) : (
+              <div className="broadcast-empty-card">
+                <h3>No recent match results</h3>
+                <p>No completed match results found for your query.</p>
               </div>
             )}
           </section>
@@ -156,6 +203,8 @@ export function Dashboard() {
               <div className="cards-3col-grid">
                 <SkeletonMatchCard /><SkeletonMatchCard />
               </div>
+            ) : viewMode === "TABLE" ? (
+              <MatchTable matches={filteredUpcoming} isLive={false} />
             ) : filteredUpcoming.length > 0 ? (
               <div className="cards-3col-grid">
                 {filteredUpcoming.map((match) => (
@@ -174,3 +223,4 @@ export function Dashboard() {
     </div>
   );
 }
+

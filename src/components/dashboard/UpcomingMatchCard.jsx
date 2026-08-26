@@ -2,12 +2,14 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { getTeamInitials } from "../../utils/teamLogos";
 
+import { resolveVenue } from "../../utils/venueResolver";
+
 export function UpcomingMatchCard({ match }) {
   if (!match) return null;
 
   const matchId = match.id || "1001";
   const title = match.title || "Upcoming Match";
-  const venue = match.venue || "Stadium";
+  const venue = resolveVenue(match);
   const dateStr = match.date || "Schedule TBA";
 
   const teams = Array.isArray(match.teams) ? match.teams : ["TEAM A", "TEAM B"];

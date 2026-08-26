@@ -8,6 +8,9 @@ import { MatchAnalyticsPanel } from "./MatchAnalyticsPanel";
 import { BroadcastTicker } from "./broadcast/BroadcastTicker";
 import { BroadcastEventOverlay } from "./broadcast/BroadcastEventOverlay";
 import { InningsTimeline } from "./InningsTimeline";
+import { PreMatchOverlay } from "./broadcast/PreMatchOverlay";
+import { MatchBreakOverlay } from "./broadcast/MatchBreakOverlay";
+import { getMatchState, MATCH_STATE_TYPES } from "../utils/matchState";
 
 export function BroadcastLayout({ matchData, connectionStatus, animations, controlState, activeEvent }) {
   const [scale, setScale] = useState(1);
@@ -31,6 +34,7 @@ export function BroadcastLayout({ matchData, connectionStatus, animations, contr
 
   if (!matchData) return null;
 
+  const stateInfo = getMatchState(matchData, controlState);
   const { teams, players } = matchData;
   const ctrl = controlState || {
     showScoreboard: true,
@@ -67,27 +71,35 @@ export function BroadcastLayout({ matchData, connectionStatus, animations, contr
           {/* Top Scoreboard & Situation Stack */}
           {(ctrl.showScoreboard || isScoreOnly) && (
             <div className="broadcast-top-group">
-              <Scoreboard matchData={matchData} animScore={animations?.score} />
-              {!isScoreOnly && <MatchSituationBar matchData={matchData} />}
+              <Scoreboard matchData={matchData} animScore={animations?.score} stateInfo={stateInfo} />
+              {!isScoreOnly && <MatchSituationBar matchData={matchData} stateInfo={stateInfo} />}
             </div>
           )}
 
-          {/* Central Hero Player Cards Section */}
+          {/* Central Hero Section: State-driven modification */}
           {ctrl.showPlayers && !isScoreOnly && !isCompact && (
-            <div className="middle-grid">
-              <BatsmanCard batsman={players.striker} teamName={teams.batting} isStriker={true} />
-              <BatsmanCard batsman={players.nonStriker} teamName={teams.batting} isStriker={false} />
-              <BowlerCard bowler={players.bowler} teamName={teams.bowling} />
-            </div>
+            <>
+              {stateInfo.type === MATCH_STATE_TYPES.NOT_STARTED ? (
+                <PreMatchOverlay matchData={matchData} stateInfo={stateInfo} />
+              ) : stateInfo.type === MATCH_STATE_TYPES.BREAK || stateInfo.type === MATCH_STATE_TYPES.COMPLETED ? (
+                <MatchBreakOverlay matchData={matchData} stateInfo={stateInfo} />
+              ) : (
+                <div className="middle-grid">
+                  <BatsmanCard batsman={players.striker} teamName={teams.batting} isStriker={true} />
+                  <BatsmanCard batsman={players.nonStriker} teamName={teams.batting} isStriker={false} />
+                  <BowlerCard bowler={players.bowler} teamName={teams.bowling} />
+                </div>
+              )}
+            </>
           )}
 
           {/* Low-height Match Context / Analytics Panel */}
-          {!isScoreOnly && !isCompact && (
+          {!isScoreOnly && !isCompact && stateInfo.type === MATCH_STATE_TYPES.LIVE && (
             <MatchAnalyticsPanel matchData={matchData} />
           )}
 
           {/* Visual Innings Progression Timeline */}
-          {!isScoreOnly && !isCompact && (
+          {!isScoreOnly && !isCompact && stateInfo.type === MATCH_STATE_TYPES.LIVE && (
             <InningsTimeline matchData={matchData} />
           )}
         </div>
@@ -102,3 +114,4 @@ export function BroadcastLayout({ matchData, connectionStatus, animations, contr
     </div>
   );
 }
+

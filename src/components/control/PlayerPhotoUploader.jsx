@@ -75,9 +75,10 @@ export function PlayerPhotoUploader({ matchData, onRefresh }) {
             <div key={key} className="player-photo-card">
               <div className="player-photo-preview">
                 <img src={portraitUrl} alt={playerName} className="portrait-img-thumb" />
-                <span className={`blob-chip ${isBlob ? "ready" : "pending"}`}>
-                  {isBlob ? "● Vercel Blob Ready" : "○ Default Avatar"}
+                <span className={`blob-chip ${isBlob ? "ready" : "missing"}`} style={!isBlob ? { background: "#f59e0b", color: "#000000", fontWeight: "700", border: "none" } : {}}>
+                  {isBlob ? "● Custom Photo Active" : "⚠️ Photo Missing"}
                 </span>
+
               </div>
 
               <div className="player-photo-info">

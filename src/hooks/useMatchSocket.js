@@ -56,10 +56,16 @@ export function useMatchSocket(matchId, onMessageCallback) {
           console.warn(`[WS] Connection error for match ${matchId}:`, err);
         };
 
-        ws.onclose = () => {
+        ws.onclose = (event) => {
           if (isUnmounted) return;
           setConnectionStatus("disconnected");
           socketRef.current = null;
+
+          // Stop infinite reconnect loop after 5 retries or explicit close code
+          if (retryCountRef.current >= 5 || event.code === 4000) {
+            console.log(`[WS] Max reconnect attempts reached for match ${matchId}. Reconnect paused.`);
+            return;
+          }
 
           const backoff = Math.min(1000 * (2 ** retryCountRef.current), 10000);
           retryCountRef.current += 1;

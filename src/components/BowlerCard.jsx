@@ -67,8 +67,8 @@ export function BowlerCard({ bowler, teamName = "IND" }) {
         {/* 2-Column Centered Footer */}
         <div className="card-bottom-stat-bar-v2 grid-2-col">
           <div className="footer-stat-item">
-            <span className="footer-lbl-gray">MAT</span>
-            <span className="footer-val-yellow">{maidens || 4}</span>
+            <span className="footer-lbl-gray">MAIDENS</span>
+            <span className="footer-val-yellow">{maidens ?? 0}</span>
           </div>
           <div className="footer-stat-item">
             <span className="footer-lbl-gray">ECONOMY</span>

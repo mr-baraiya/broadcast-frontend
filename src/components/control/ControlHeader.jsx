@@ -7,8 +7,12 @@ export function ControlHeader({ matchTitle, matchId, connectionStatus }) {
 
   return (
     <header className="control-header">
-      <div className="control-header-left">
+      <div className="control-header-left" style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
         <Link to="/" className="btn-back">← Dashboard</Link>
+
+        <img src="/logo.png" alt="App Logo" style={{ height: "30px", width: "auto", objectFit: "contain" }} />
+
+
 
         <div className="control-title-wrap">
           <h1 className="control-title">{matchTitle || `Match ${matchId}`}</h1>
@@ -46,3 +50,4 @@ export function ControlHeader({ matchTitle, matchId, connectionStatus }) {
     </header>
   );
 }
+

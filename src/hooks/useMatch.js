@@ -57,6 +57,33 @@ export function useMatch(matchId) {
     };
   }, [matchId]);
 
+  // Automatic Real-Time Auto-Update Polling Interval (every 3 seconds)
+  useEffect(() => {
+    if (!matchId) return;
+
+    let isMounted = true;
+
+    const pollLiveScores = () => {
+      getMatchFull(matchId)
+        .then((raw) => {
+          if (isMounted) {
+            const normalized = normalizeMatchData(raw);
+            if (normalized) {
+              setMatchData(normalized);
+            }
+          }
+        })
+        .catch(() => {});
+    };
+
+    const intervalId = setInterval(pollLiveScores, 3000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(intervalId);
+    };
+  }, [matchId]);
+
   // Subscribe to teamLogos registry updates
   useEffect(() => {
     const unsub = subscribeRegistryUpdate(() => {

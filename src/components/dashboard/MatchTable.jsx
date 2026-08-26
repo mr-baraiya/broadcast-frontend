@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { formatRunsWickets, formatOvers } from "../../utils/formatScore";
 import { MonitorPlay, SlidersHorizontal } from "lucide-react";
 
+import { resolveVenue } from "../../utils/venueResolver";
+
 export function MatchTable({ matches, isLive = true }) {
   if (!matches || matches.length === 0) {
     return (
@@ -22,15 +24,43 @@ export function MatchTable({ matches, isLive = true }) {
             <th style={{ minWidth: "200px" }}>SCORE / OVERS</th>
             <th style={{ minWidth: "260px" }}>SITUATION / DETAILS</th>
             <th style={{ minWidth: "180px" }}>VENUE</th>
-            <th style={{ width: "240px", textAlign: "right" }}>ACTIONS</th>
+            <th style={{ width: "270px", textAlign: "right", whiteSpace: "nowrap" }}>ACTIONS</th>
           </tr>
         </thead>
         <tbody>
           {matches.map((match) => {
             const matchId = match.id || "163017";
             const title = match.title || "Cricket Match";
-            const venue = match.venue || "Stadium";
+            const venue = resolveVenue(match);
             const statusText = match.status_text || match.status || (isLive ? "LIVE" : "UPCOMING");
+            const rawStatus = (match.status || "").toUpperCase();
+            const stLower = (statusText || "").toLowerCase();
+
+            let displayStatus = "LIVE";
+            let statusClass = "live";
+
+            if (rawStatus === "COMPLETED" || stLower.includes("won by") || stLower.includes("won")) {
+              displayStatus = "RESULT";
+              statusClass = "completed";
+            } else if (stLower.includes("lunch")) {
+              displayStatus = "LUNCH";
+              statusClass = "break";
+            } else if (stLower.includes("tea")) {
+              displayStatus = "TEA BREAK";
+              statusClass = "break";
+            } else if (stLower.includes("stumps")) {
+              displayStatus = "STUMPS";
+              statusClass = "break";
+            } else if (stLower.includes("delay") || stLower.includes("rain")) {
+              displayStatus = "DELAYED";
+              statusClass = "break";
+            } else if (!isLive || rawStatus === "UPCOMING") {
+              displayStatus = "UPCOMING";
+              statusClass = "upcoming";
+            } else {
+              displayStatus = "● LIVE";
+              statusClass = "live";
+            }
 
             const teams = Array.isArray(match.teams) ? match.teams : ["TEAM A", "TEAM B"];
             const teamA = teams[0] || "TEAM A";
@@ -49,8 +79,8 @@ export function MatchTable({ matches, isLive = true }) {
               <tr key={matchId} className="table-row">
                 {/* Status Column */}
                 <td>
-                  <span className={`status-pill ${isLive ? "live" : "upcoming"}`}>
-                    {isLive ? "● LIVE" : "UPCOMING"}
+                  <span className={`status-pill ${statusClass}`}>
+                    {displayStatus}
                   </span>
                 </td>
 
@@ -82,7 +112,8 @@ export function MatchTable({ matches, isLive = true }) {
                 </td>
 
                 {/* Actions Column */}
-                <td className="cell-actions">
+                <td className="cell-actions" style={{ whiteSpace: "nowrap" }}>
+
                   <div className="actions-flex">
                     <Link to={`/live/${matchId}`} className="btn-table-action live">
                       <MonitorPlay size={14} />
