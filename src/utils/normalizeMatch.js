@@ -9,10 +9,8 @@ export function normalizeMatchData(rawPayload) {
 
   const cleanTeamName = (t) => {
     if (!t) return "";
-    let s = String(t).replace(/\(.*?\)/g, "").split("|")[0];
-    s = s.replace(/\b\d+\s*(?:&|\+)\s*\d+[-/]\d+\s*(?:d|f\/o|a\/o)?\b/gi, "");
-    s = s.replace(/\b\d+[-/]\d+\s*(?:d|f\/o|a\/o)?\b/gi, "");
-    s = s.replace(/\b\d+\s*d\b/gi, "");
+    let s = String(t).replace(/\(.*/g, "").split("|")[0];
+    s = s.replace(/\d+.*/g, "").replace(/[-:]+$/g, "");
     return s.trim() || t;
   };
 
