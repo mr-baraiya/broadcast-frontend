@@ -7,9 +7,18 @@ export function normalizeMatchData(rawPayload) {
   const match = data.match || {};
   const score = data.score || {};
 
+  const cleanTeamName = (t) => {
+    if (!t) return "";
+    let s = String(t).replace(/\(.*?\)/g, "").split("|")[0];
+    s = s.replace(/\b\d+\s*(?:&|\+)\s*\d+[-/]\d+\s*(?:d|f\/o|a\/o)?\b/gi, "");
+    s = s.replace(/\b\d+[-/]\d+\s*(?:d|f\/o|a\/o)?\b/gi, "");
+    s = s.replace(/\b\d+\s*d\b/gi, "");
+    return s.trim() || t;
+  };
+
   const teams = Array.isArray(match.teams) && match.teams.length >= 2
-    ? match.teams
-    : (match.title ? match.title.split(" vs ") : ["TEAM A", "TEAM B"]);
+    ? match.teams.map(cleanTeamName)
+    : (match.title ? match.title.split(" vs ").map(cleanTeamName) : ["TEAM A", "TEAM B"]);
 
   const battingTeam = score.team || teams[0];
   const bowlingTeam = teams.find(t => t.toLowerCase() !== battingTeam.toLowerCase()) || teams[1];
