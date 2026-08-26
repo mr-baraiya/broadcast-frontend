@@ -874,13 +874,13 @@ body,
   background: linear-gradient(90deg, #1e3a8a 0%, #1e40af 100%);
   border: 1px solid #3b82f6;
   border-radius: 8px;
-  padding: 0.4vh 1.4vw;
+  padding: 0.5vh 1.4vw;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 1.2vw;
   font-weight: 900;
-  font-size: clamp(0.95rem, 1.2vw, 1.3rem);
+  font-size: clamp(1.1rem, 1.35vw, 1.45rem);
   color: #ffffff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
@@ -922,8 +922,8 @@ body,
 
 .over-title-lbl {
   font-weight: 900;
-  color: #ffffff;
-  font-size: 0.9rem;
+  color: #facc15;
+  font-size: 1.05rem;
   letter-spacing: 1px;
 }
 
@@ -945,11 +945,12 @@ body,
   align-items: center;
   gap: 0.4rem;
   font-weight: 900;
-  font-size: clamp(0.9rem, 1.1vw, 1.2rem);
+  font-size: clamp(1.05rem, 1.3vw, 1.4rem);
 }
 
 .ctx-lbl {
-  color: #94a3b8;
+  color: #e2e8f0;
+  font-size: 1.05rem;
 }
 
 .ctx-val.yellow {
@@ -1170,16 +1171,16 @@ body,
 }
 
 .analytics-title {
-  font-size: 0.85rem;
+  font-size: 1.05rem;
   font-weight: 900;
   letter-spacing: 1px;
   color: #38bdf8;
 }
 
 .analytics-subtitle {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #94a3b8;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #cbd5e1;
 }
 
 .analytics-metrics-grid {
@@ -1192,29 +1193,29 @@ body,
 .metric-box {
   background: rgba(15, 23, 42, 0.6);
   border-radius: 6px;
-  padding: 0.4vh 0.8vw;
+  padding: 0.6vh 1.0vw;
   display: flex;
   flex-direction: column;
 }
 
 .metric-lbl {
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   font-weight: 900;
-  color: #94a3b8;
-  letter-spacing: 0.5px;
+  color: #e2e8f0;
+  letter-spacing: 0.8px;
 }
 
 .metric-val {
-  font-size: clamp(1.1rem, 1.5vw, 1.8rem);
+  font-size: clamp(1.4rem, 2.0vw, 2.4rem);
   font-weight: 900;
   color: #ffffff;
   line-height: 1.1;
 }
 
 .metric-sub {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #94a3b8;
+  font-size: 1.0rem;
+  font-weight: 800;
+  color: #cbd5e1;
 }
 
 .metric-sub.yellow {
@@ -1277,16 +1278,16 @@ body,
 }
 
 .timeline-title-text {
-  font-size: 0.82rem;
+  font-size: 1.05rem;
   font-weight: 900;
   color: #facc15;
   letter-spacing: 1px;
 }
 
 .timeline-curr-partnership-text {
-  font-size: 0.82rem;
+  font-size: 1.05rem;
   font-weight: 800;
-  color: #cbd5e1;
+  color: #e2e8f0;
 }
 
 .val-gold {
@@ -1319,15 +1320,15 @@ body,
 }
 
 .point-score-num {
-  font-size: 0.78rem;
-  font-weight: 800;
-  color: #e2e8f0;
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: #ffffff;
   line-height: 1;
 }
 
 .point-score-num.gold {
   color: #facc15;
-  font-size: 0.85rem;
+  font-size: 1.05rem;
   font-weight: 900;
 }
 
@@ -1360,9 +1361,9 @@ body,
 }
 
 .point-label-sub {
-  font-size: 0.72rem;
-  font-weight: 800;
-  color: #94a3b8;
+  font-size: 0.90rem;
+  font-weight: 900;
+  color: #e2e8f0;
 }
 
 .point-label-sub.red-txt {
@@ -1523,27 +1524,27 @@ body,
 }
 
 .footer-lbl-gray {
-  color: #cbd5e1;
-  font-size: 0.88rem;
-  font-weight: 800;
+  color: #e2e8f0;
+  font-size: 1.05rem;
+  font-weight: 900;
   letter-spacing: 0.5px;
 }
 
 .footer-val-yellow {
   color: #facc15;
-  font-size: 0.98rem;
+  font-size: 1.2rem;
   font-weight: 900;
   margin-left: 0.4rem;
 }
 
 .point-score-num.prominent {
-  font-size: 0.86rem;
+  font-size: 0.95rem;
   font-weight: 900;
   color: #ffffff;
 }
 
 .point-score-num.giant-gold {
-  font-size: 0.98rem;
+  font-size: 1.1rem;
   font-weight: 900;
   color: #facc15;
   line-height: 1;
@@ -1562,7 +1563,7 @@ body,
 .gold-txt-overs {
   color: #facc15;
   font-weight: 900;
-  font-size: 0.76rem;
+  font-size: 0.92rem;
 }
 
 /* =========================================================
