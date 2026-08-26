@@ -191,14 +191,12 @@ export function getPlayerPortrait(player, roleKey) {
     }
   }
 
-  // 3. Fallback to existing player.image if valid non-Dicebear URL
+  // 3. Fallback to existing player.image URL if present
   if (typeof player === "object" && player && player.image && typeof player.image === "string" && player.image.startsWith("http")) {
-    if (!player.image.includes("dicebear.com")) {
-      return player.image;
-    }
+    return player.image;
   }
 
-  // 4. Clean Template Person Image Fallback (No cartoon emojis)
+  // 4. Default player portrait fallback
   return "/default-player.svg";
 }
 

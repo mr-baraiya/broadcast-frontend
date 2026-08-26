@@ -132,10 +132,12 @@ export function MatchSituationBar({ matchData, stateInfo }) {
 
       {/* LEVEL 4 — Player Context Strip */}
       <div className="level-4-player-context-strip">
-        <div className="context-item left">
-          <span className="ctx-lbl">Next batsman:</span>
-          <span className="ctx-val yellow">{score?.nextBatsman || "N/A"}</span>
-        </div>
+        {score?.nextBatsman && score.nextBatsman !== "N/A" && (
+          <div className="context-item left">
+            <span className="ctx-lbl">Next batsman:</span>
+            <span className="ctx-val yellow">{score.nextBatsman}</span>
+          </div>
+        )}
 
         <div className="context-item right">
           <span className="ctx-lbl">Last wicket:</span>

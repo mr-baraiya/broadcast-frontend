@@ -163,8 +163,18 @@ export function normalizeMatchData(rawPayload) {
   }
 
   // Innings State (1st INNINGS / 2nd INNINGS)
-  const rawInningNum = data.inning_number || (data.innings && data.innings.number) || 1;
-  const inningLabel = rawInningNum === 1 ? "1st INNINGS" : `${rawInningNum}nd INNINGS`;
+  let rawInningNum = data.inning_number || (data.innings && data.innings.number);
+  if (!rawInningNum) {
+    const stText = (match.status_text || "").toLowerCase();
+    const scText = JSON.stringify(score).toLowerCase();
+    if (stText.includes("f/o") || stText.includes("follow-on") || scText.includes("&") || stText.includes("day 4") || stText.includes("day 5")) {
+      rawInningNum = 2;
+    } else {
+      rawInningNum = 1;
+    }
+  }
+  const isFollowOn = (match.status_text || "").toLowerCase().includes("f/o");
+  const inningLabel = rawInningNum === 1 ? "1st INNINGS" : `2nd INNINGS${isFollowOn ? " (f/o)" : ""}`;
 
   return {
     id: match.id || "",
